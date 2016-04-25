@@ -42,10 +42,10 @@ public:
   void draw_point(float x, float y, float r, float g, float b) const;
 
   // Return the mouse position in screen coordinates
-  std::pair<int, int> mouse_position() const;
+  std::pair<int, int> mouse_position_in_screen_coordinates() const;
 
   // Return the mouse position in [0,1)^2
-  std::pair<float, float> normalized_mouse_position() const;
+  std::pair<float, float> mouse_position() const;
 
   // is closed flag set
   bool should_close() const;

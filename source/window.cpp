@@ -111,12 +111,12 @@ bool Window::should_close() const
   return glfwWindowShouldClose(m_window);
 }
 
-std::pair<int, int> Window::mouse_position() const
+std::pair<int, int> Window::mouse_position_in_screen_coordinates() const
 {
   return m_mouse_position;
 }
 
-std::pair<float, float> Window::normalized_mouse_position() const
+std::pair<float, float> Window::mouse_position() const
 {
   return std::make_pair(float(m_mouse_position.first)/float(m_size.first)
          , 1.0f - float(m_mouse_position.second)/float(m_size.second));

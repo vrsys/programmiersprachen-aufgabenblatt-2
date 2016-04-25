@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     win.draw_point(x2, y2, 0.0f, 1.0f, 0.0f);
     win.draw_point(x3, y3, 0.0f, 0.0f, 1.0f);
 
-    auto m = win.normalized_mouse_position();
+    auto m = win.mouse_position();
     win.draw_line(0.1f, 0.1f, 0.8f,0.1f, 1.0,0.0,0.0);
 
     win.draw_line(0.0f, m.second, 0.01f, m.second, 0.0, 0.0, 0.0);
