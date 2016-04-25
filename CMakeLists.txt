@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 project(blatt2)
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel") AND UNIX))
-  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11 -Wall")
+  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14 -Wall")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-  set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
+  set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
 endif()
 
 # Add externals
