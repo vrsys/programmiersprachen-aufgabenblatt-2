@@ -29,12 +29,16 @@ public:
     KEY_REPEAT  = GLFW_REPEAT
   };
 
+  // Draw a line starting at (startX,startY) to (endX, endY) with color (r,g,b)
+  // where (startX,startY), (endX, endY) \in [0,1)^2 and (r,g,b) \in [0,1)^3
   void draw_line(float startX, float startY,
                 float endX, float endY,
                 float r, float g, float b
                 ) const;
 
 
+  // Draw a point at (x,y) with color (r,g,b)
+  // where (x,y)\in [0,1)^2 and (r,g,b) \in [0,1)^3
   void draw_point(float x, float y, float r, float g, float b) const;
 
   // Return the mouse position in screen coordinates
