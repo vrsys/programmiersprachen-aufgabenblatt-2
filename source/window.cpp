@@ -4,106 +4,70 @@
 #include <iostream>
 #include <cassert>
 
+#include <nanovg.h>
+#define NANOVG_GL3_IMPLEMENTATION
+#include <nanovg_gl.h>
+
 Window::Window(std::pair<int, int> const& windowsize)
   : m_window{nullptr}
-  , m_size{windowsize}
+  , m_nvgContext{nullptr}
+  , m_windowSize{windowsize}
+  , m_framebufferSize{windowsize}
   , m_title("Fensterchen")
-  , m_mouse_position{}
-  , m_mouse_button_flags{0}
-  , m_keypressed{}
+  , m_font_normal{0}
 {
-  std::fill(std::begin(m_keypressed), std::end(m_keypressed), 0);
   glfwInit();
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+  //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
   glfwWindowHint(GLFW_RESIZABLE, 0);
   m_window = glfwCreateWindow(windowsize.first, windowsize.second, m_title.c_str(), nullptr, nullptr);
+
+  //  the pollable state of a mouse button will remain GLFW_PRESS until the
+  //  state of that button is polled with glfwGetMouseButton. Once it has been
+  //  polled, if a mouse button release event had been processed in the
+  //  meantime, the state will reset to GLFW_RELEASE, otherwise it will remain
+  //  GLFW_PRESS.
+  glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 
   if (m_window) {
     glfwSetWindowUserPointer(m_window, this);
     assert(m_window != nullptr);
 
-    glfwSetMouseButtonCallback(m_window, Window::mouseButtonCallback);
-    glfwSetCursorPosCallback(m_window, Window::cursorPositionCallback);
-    glfwSetKeyCallback(m_window, Window::keyCallback);
     glfwMakeContextCurrent(m_window);
 
     glewInit();
+    m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_NOTEQUAL, 0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    m_font_normal = nvgCreateFont(m_nvgContext, "sans", "Roboto-Regular.ttf");
+    if (m_font_normal == -1) {
+      throw "Could not add font italic.";
+    }
 
-    glEnable(GL_POINT_SMOOTH);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glPointSize(5.0f);
-    glEnable(GL_POINT_SMOOTH);
+    // Begin Frame
+    glfwGetFramebufferSize(m_window, &m_framebufferSize.first, &m_framebufferSize.second);
 
-    glLineWidth(2.0f);
-    glEnable(GL_LINE_SMOOTH);
-    glClearColor(1.0f,1.0f,1.0f,1.0f);
+    // Calculate pixel ration for hi-dpi devices.
+    float pxRatio = float(m_framebufferSize.first) / float(m_windowSize.first);
+    glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
+    //glClearColor(1.0f,1.0f,1.0f,1.0f);
+    glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, pxRatio);
   }
 }
 
 Window::~Window()
 {
-  if (m_window) {
-    glfwDestroyWindow(m_window);
-    m_window = nullptr;
-  }
   glfwTerminate();
 }
 
-void Window::cursorPositionCallback(GLFWwindow* win, double x, double y)
+int Window::get_key(int key) const
 {
-  Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
-  if (w) {
-    w->m_mouse_position = std::make_pair(x, y);
-  }
+  return glfwGetKey(m_window, key);
 }
 
-void Window::mouseButtonCallback(GLFWwindow* win, int button, int act, int mods)
+int Window::get_mouse_button(int button) const
 {
-  Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
-  assert(w);
-
-  if (GLFW_PRESS == act) {
-      switch (button) {
-        case GLFW_MOUSE_BUTTON_LEFT:
-          w->m_mouse_button_flags |= Window::MOUSE_BUTTON_LEFT;
-          break;
-        case GLFW_MOUSE_BUTTON_MIDDLE:
-          w->m_mouse_button_flags |= Window::MOUSE_BUTTON_MIDDLE;
-          break;
-        case GLFW_MOUSE_BUTTON_RIGHT:
-          w->m_mouse_button_flags |= Window::MOUSE_BUTTON_RIGHT;
-          break;
-        default:
-          break;
-      }
-  } else if (act == GLFW_RELEASE) {
-    switch (button) {
-      case GLFW_MOUSE_BUTTON_LEFT:
-        w->m_mouse_button_flags &= ~Window::MOUSE_BUTTON_LEFT;
-        break;
-      case GLFW_MOUSE_BUTTON_MIDDLE:
-        w->m_mouse_button_flags &= ~Window::MOUSE_BUTTON_MIDDLE;
-        break;
-      case GLFW_MOUSE_BUTTON_RIGHT:
-        w->m_mouse_button_flags &= ~Window::MOUSE_BUTTON_RIGHT;
-        break;
-      default:
-        break;
-    }
-  }
-}
-
-void Window::keyCallback(GLFWwindow* win, int key, int scancode, int act, int mods)
-{
-  Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
-  if (w) {
-    w->m_keypressed[key] = act == KEY_PRESS;
-  }
+  return glfwGetMouseButton(m_window, button);
 }
 
 bool Window::should_close() const
@@ -111,15 +75,12 @@ bool Window::should_close() const
   return glfwWindowShouldClose(m_window);
 }
 
-std::pair<int, int> Window::mouse_position_in_screen_coordinates() const
+std::pair<double, double> Window::mouse_position() const
 {
-  return m_mouse_position;
-}
-
-std::pair<float, float> Window::mouse_position() const
-{
-  return std::make_pair(float(m_mouse_position.first)/float(m_size.first)
-         , 1.0f - float(m_mouse_position.second)/float(m_size.second));
+  double xpos=0.0;
+  double ypos=0.0f;
+  glfwGetCursorPos(m_window, &xpos, &ypos);
+  return {xpos, ypos};
 }
 
 void Window::close()
@@ -129,18 +90,18 @@ void Window::close()
 
 void Window::update()
 {
+  // End Frame
+  nvgEndFrame(m_nvgContext);
   glfwSwapBuffers(m_window);
   glfwPollEvents();
 
-  // prepare next frame
-  glViewport(0, 0, m_size.first, m_size.second);
-  glClear(GL_COLOR_BUFFER_BIT);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0,1.0,0.0,1.0,0.01,100.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(0.0, 0.0, -100.0);
+  // Begin Frame
+  glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  // Calculate pixel ration for hi-dpi devices.
+  float pxRatio = float(m_framebufferSize.first) / float(m_windowSize.first);
+  nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, pxRatio);
 }
 
 std::pair<int, int> Window::window_size() const
@@ -155,22 +116,44 @@ void Window::draw_line(float startX, float startY,
                 float r, float g, float b
                 ) const
 {
-  glColor3f(r, g, b);
-  glBegin(GL_LINES);
-  {
-    glVertex2f(startX, startY);
-    glVertex2f(endX, endY);
-  }
-  glEnd();
+  nvgSave(m_nvgContext);
 
+  nvgBeginPath(m_nvgContext);
+  nvgLineCap(m_nvgContext, NVG_ROUND);
+  nvgLineJoin(m_nvgContext, NVG_BEVEL);
+  nvgStrokeColor(m_nvgContext, nvgRGBA(r*255.0f,g*255.0f,b*255.0f,160));
+  nvgStrokeWidth(m_nvgContext, 3.0f);
+  nvgMoveTo(m_nvgContext, startX, startY);
+  nvgLineTo(m_nvgContext, endX, endY);
+  nvgStroke(m_nvgContext);
+
+  nvgRestore(m_nvgContext);
 }
 
 void Window::draw_point(float x, float y, float r, float g, float b) const
 {
-  glColor3f(r, g, b);
-  glBegin(GL_POINTS);
-    glVertex2f(x, y);
-  glEnd();
+  nvgSave(m_nvgContext);
+  nvgBeginPath(m_nvgContext);
+  nvgCircle(m_nvgContext, x, y, 2);
+
+  auto col = nvgRGBA(r*255.0f,g*255.0f,b*255.0f,255);
+  nvgFillColor(m_nvgContext, col);
+  nvgFill(m_nvgContext);
+  nvgStrokeColor(m_nvgContext, col);
+  nvgStroke(m_nvgContext);
+  nvgRestore(m_nvgContext);
+}
+
+void Window::draw_text(float x, float y, float font_size, std::string const& text) const
+{
+  nvgSave(m_nvgContext);
+  nvgFontSize(m_nvgContext, font_size);
+  nvgFontFace(m_nvgContext, "sans");
+  nvgTextAlign(m_nvgContext, NVG_ALIGN_LEFT|NVG_ALIGN_TOP);
+
+  nvgFillColor(m_nvgContext, nvgRGBA(255, 255, 255, 255));
+  nvgText(m_nvgContext, x, y, text.c_str(), nullptr);
+  nvgRestore(m_nvgContext);
 }
 
 float Window::get_time() const

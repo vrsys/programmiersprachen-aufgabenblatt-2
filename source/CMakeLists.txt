@@ -6,8 +6,9 @@ add_executable(example
 target_link_libraries(example
   glfw
   ${GLFW_LIBRARIES}
+  nanovg
   m)
-add_dependencies(example glfw ${COPY_BINARY})
+add_dependencies(example glfw nanovg ${COPY_BINARY})
 
 # Build tests
 add_executable(tests

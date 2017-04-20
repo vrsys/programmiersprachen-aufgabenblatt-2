@@ -12,7 +12,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external)
 add_definitions(-DGLEW_STATIC)
 
 # build GLFW
-set(GLFW_DIRECTORY glfw-3.0.3)
+set(GLFW_DIRECTORY glfw-3.2.1)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/${GLFW_DIRECTORY}/include)
 
 set(GLFW_INSTALL OFF CACHE STRING "" FORCE)
@@ -21,24 +21,26 @@ set(GLFW_BUILD_TESTS OFF CACHE STRING "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/${GLFW_DIRECTORY})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/${GLFW_DIRECTORY}/include)
 
+set(NANOVG_DIRECTORY nanovg)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/src)
+
+add_library(nanovg STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/src/nanovg.c
+)
+
+# Quench warnings while compiling NanoVG
+if (CMAKE_COMPILER_IS_GNUCC)
+  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/src/nanovg.c PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+elseif(MSVC)
+  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
+endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/example/Roboto-Regular.ttf DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/external/${NANOVG_DIRECTORY}/example/Roboto-Regular.ttf DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/source/)
+
 # Use catch for testing
 set(CATCH_DIRECTORY catch-1.1)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/${CATCH_DIRECTORY})
-
-if(MSVC)
-  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/build/)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(COPY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/build/Debug/)
-  else(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(COPY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/build/Release/)
-  endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-else(MSVC)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-  else(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-  endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-endif(MSVC)
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
