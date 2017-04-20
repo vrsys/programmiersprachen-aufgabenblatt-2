@@ -25,22 +25,6 @@ extern "C" {
 
 #define NVG_PI 3.14159265358979323846264338327f
 
-#if defined(NVG_SHARED)
-#  if defined(_WIN32)
-#    if defined(NVG_BUILD)
-#      define NVG_EXPORT __declspec(dllexport)
-#    else
-#      define NVG_EXPORT __declspec(dllimport)
-#    endif
-#  elif defined(NVG_BUILD)
-#    define NVG_EXPORT __attribute__ ((visibility("default")))
-#  else
-#    define NVG_EXPORT
-#  endif
-#else
-#    define NVG_EXPORT
-#endif
-
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4201)  // nonstandard extension used : nameless struct/union
@@ -157,6 +141,7 @@ enum NVGimageFlags {
 	NVG_IMAGE_REPEATY			= 1<<2,		// Repeat image in Y direction.
 	NVG_IMAGE_FLIPY				= 1<<3,		// Flips (inverses) image in Y direction when rendered.
 	NVG_IMAGE_PREMULTIPLIED		= 1<<4,		// Image data has premultiplied alpha.
+	NVG_IMAGE_NEAREST			= 1<<5,		// Image interpolation is Nearest instead Linear
 };
 
 // Begin drawing a new frame
@@ -167,13 +152,13 @@ enum NVGimageFlags {
 // For example, GLFW returns two dimension for an opened window: window size and
 // frame buffer size. In that case you would set windowWidth/Height to the window size
 // devicePixelRatio to: frameBufferWidth / windowWidth.
-extern NVG_EXPORT void nvgBeginFrame(NVGcontext* ctx, int windowWidth, int windowHeight, float devicePixelRatio);
+void nvgBeginFrame(NVGcontext* ctx, int windowWidth, int windowHeight, float devicePixelRatio);
 
 // Cancels drawing the current frame.
-extern NVG_EXPORT void nvgCancelFrame(NVGcontext* ctx);
+void nvgCancelFrame(NVGcontext* ctx);
 
 // Ends drawing flushing remaining render state.
-extern NVG_EXPORT void nvgEndFrame(NVGcontext* ctx);
+void nvgEndFrame(NVGcontext* ctx);
 
 //
 // Composite operation
@@ -183,13 +168,13 @@ extern NVG_EXPORT void nvgEndFrame(NVGcontext* ctx);
 // The colors in the blending state have premultiplied alpha.
 
 // Sets the composite operation. The op parameter should be one of NVGcompositeOperation.
-extern NVG_EXPORT void nvgGlobalCompositeOperation(NVGcontext* ctx, int op);
+void nvgGlobalCompositeOperation(NVGcontext* ctx, int op);
 
 // Sets the composite operation with custom pixel arithmetic. The parameters should be one of NVGblendFactor.
-extern NVG_EXPORT void nvgGlobalCompositeBlendFunc(NVGcontext* ctx, int sfactor, int dfactor);
+void nvgGlobalCompositeBlendFunc(NVGcontext* ctx, int sfactor, int dfactor);
 
 // Sets the composite operation with custom pixel arithmetic for RGB and alpha components separately. The parameters should be one of NVGblendFactor.
-extern NVG_EXPORT void nvgGlobalCompositeBlendFuncSeparate(NVGcontext* ctx, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha);
+void nvgGlobalCompositeBlendFuncSeparate(NVGcontext* ctx, int srcRGB, int dstRGB, int srcAlpha, int dstAlpha);
 
 //
 // Color utils
@@ -197,35 +182,35 @@ extern NVG_EXPORT void nvgGlobalCompositeBlendFuncSeparate(NVGcontext* ctx, int 
 // Colors in NanoVG are stored as unsigned ints in ABGR format.
 
 // Returns a color value from red, green, blue values. Alpha will be set to 255 (1.0f).
-extern NVG_EXPORT NVGcolor nvgRGB(unsigned char r, unsigned char g, unsigned char b);
+NVGcolor nvgRGB(unsigned char r, unsigned char g, unsigned char b);
 
 // Returns a color value from red, green, blue values. Alpha will be set to 1.0f.
-extern NVG_EXPORT NVGcolor nvgRGBf(float r, float g, float b);
+NVGcolor nvgRGBf(float r, float g, float b);
 
 
 // Returns a color value from red, green, blue and alpha values.
-extern NVG_EXPORT NVGcolor nvgRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+NVGcolor nvgRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 // Returns a color value from red, green, blue and alpha values.
-extern NVG_EXPORT NVGcolor nvgRGBAf(float r, float g, float b, float a);
+NVGcolor nvgRGBAf(float r, float g, float b, float a);
 
 
 // Linearly interpolates from color c0 to c1, and returns resulting color value.
-extern NVG_EXPORT NVGcolor nvgLerpRGBA(NVGcolor c0, NVGcolor c1, float u);
+NVGcolor nvgLerpRGBA(NVGcolor c0, NVGcolor c1, float u);
 
 // Sets transparency of a color value.
-extern NVG_EXPORT NVGcolor nvgTransRGBA(NVGcolor c0, unsigned char a);
+NVGcolor nvgTransRGBA(NVGcolor c0, unsigned char a);
 
 // Sets transparency of a color value.
-extern NVG_EXPORT NVGcolor nvgTransRGBAf(NVGcolor c0, float a);
+NVGcolor nvgTransRGBAf(NVGcolor c0, float a);
 
 // Returns color value specified by hue, saturation and lightness.
 // HSL values are all in range [0..1], alpha will be set to 255.
-extern NVG_EXPORT NVGcolor nvgHSL(float h, float s, float l);
+NVGcolor nvgHSL(float h, float s, float l);
 
 // Returns color value specified by hue, saturation and lightness and alpha.
 // HSL values are all in range [0..1], alpha in range [0..255]
-extern NVG_EXPORT NVGcolor nvgHSLA(float h, float s, float l, unsigned char a);
+NVGcolor nvgHSLA(float h, float s, float l, unsigned char a);
 
 //
 // State Handling
@@ -236,13 +221,13 @@ extern NVG_EXPORT NVGcolor nvgHSLA(float h, float s, float l, unsigned char a);
 
 // Pushes and saves the current render state into a state stack.
 // A matching nvgRestore() must be used to restore the state.
-extern NVG_EXPORT void nvgSave(NVGcontext* ctx);
+void nvgSave(NVGcontext* ctx);
 
 // Pops and restores current render state.
-extern NVG_EXPORT void nvgRestore(NVGcontext* ctx);
+void nvgRestore(NVGcontext* ctx);
 
 // Resets current render state to default values. Does not affect the render state stack.
-extern NVG_EXPORT void nvgReset(NVGcontext* ctx);
+void nvgReset(NVGcontext* ctx);
 
 //
 // Render styles
@@ -254,35 +239,35 @@ extern NVG_EXPORT void nvgReset(NVGcontext* ctx);
 // Current render style can be saved and restored using nvgSave() and nvgRestore().
 
 // Sets current stroke style to a solid color.
-extern NVG_EXPORT void nvgStrokeColor(NVGcontext* ctx, NVGcolor color);
+void nvgStrokeColor(NVGcontext* ctx, NVGcolor color);
 
 // Sets current stroke style to a paint, which can be a one of the gradients or a pattern.
-extern NVG_EXPORT void nvgStrokePaint(NVGcontext* ctx, NVGpaint paint);
+void nvgStrokePaint(NVGcontext* ctx, NVGpaint paint);
 
 // Sets current fill style to a solid color.
-extern NVG_EXPORT void nvgFillColor(NVGcontext* ctx, NVGcolor color);
+void nvgFillColor(NVGcontext* ctx, NVGcolor color);
 
 // Sets current fill style to a paint, which can be a one of the gradients or a pattern.
-extern NVG_EXPORT void nvgFillPaint(NVGcontext* ctx, NVGpaint paint);
+void nvgFillPaint(NVGcontext* ctx, NVGpaint paint);
 
 // Sets the miter limit of the stroke style.
 // Miter limit controls when a sharp corner is beveled.
-extern NVG_EXPORT void nvgMiterLimit(NVGcontext* ctx, float limit);
+void nvgMiterLimit(NVGcontext* ctx, float limit);
 
 // Sets the stroke width of the stroke style.
-extern NVG_EXPORT void nvgStrokeWidth(NVGcontext* ctx, float size);
+void nvgStrokeWidth(NVGcontext* ctx, float size);
 
 // Sets how the end of the line (cap) is drawn,
 // Can be one of: NVG_BUTT (default), NVG_ROUND, NVG_SQUARE.
-extern NVG_EXPORT void nvgLineCap(NVGcontext* ctx, int cap);
+void nvgLineCap(NVGcontext* ctx, int cap);
 
 // Sets how sharp path corners are drawn.
 // Can be one of NVG_MITER (default), NVG_ROUND, NVG_BEVEL.
-extern NVG_EXPORT void nvgLineJoin(NVGcontext* ctx, int join);
+void nvgLineJoin(NVGcontext* ctx, int join);
 
 // Sets the transparency applied to all rendered shapes.
 // Already transparent paths will get proportionally more transparent as well.
-extern NVG_EXPORT void nvgGlobalAlpha(NVGcontext* ctx, float alpha);
+void nvgGlobalAlpha(NVGcontext* ctx, float alpha);
 
 //
 // Transforms
@@ -302,75 +287,75 @@ extern NVG_EXPORT void nvgGlobalAlpha(NVGcontext* ctx, float alpha);
 // Current coordinate system (transformation) can be saved and restored using nvgSave() and nvgRestore().
 
 // Resets current transform to a identity matrix.
-extern NVG_EXPORT void nvgResetTransform(NVGcontext* ctx);
+void nvgResetTransform(NVGcontext* ctx);
 
 // Premultiplies current coordinate system by specified matrix.
 // The parameters are interpreted as matrix as follows:
 //   [a c e]
 //   [b d f]
 //   [0 0 1]
-extern NVG_EXPORT void nvgTransform(NVGcontext* ctx, float a, float b, float c, float d, float e, float f);
+void nvgTransform(NVGcontext* ctx, float a, float b, float c, float d, float e, float f);
 
 // Translates current coordinate system.
-extern NVG_EXPORT void nvgTranslate(NVGcontext* ctx, float x, float y);
+void nvgTranslate(NVGcontext* ctx, float x, float y);
 
 // Rotates current coordinate system. Angle is specified in radians.
-extern NVG_EXPORT void nvgRotate(NVGcontext* ctx, float angle);
+void nvgRotate(NVGcontext* ctx, float angle);
 
 // Skews the current coordinate system along X axis. Angle is specified in radians.
-extern NVG_EXPORT void nvgSkewX(NVGcontext* ctx, float angle);
+void nvgSkewX(NVGcontext* ctx, float angle);
 
 // Skews the current coordinate system along Y axis. Angle is specified in radians.
-extern NVG_EXPORT void nvgSkewY(NVGcontext* ctx, float angle);
+void nvgSkewY(NVGcontext* ctx, float angle);
 
 // Scales the current coordinate system.
-extern NVG_EXPORT void nvgScale(NVGcontext* ctx, float x, float y);
+void nvgScale(NVGcontext* ctx, float x, float y);
 
 // Stores the top part (a-f) of the current transformation matrix in to the specified buffer.
 //   [a c e]
 //   [b d f]
 //   [0 0 1]
 // There should be space for 6 floats in the return buffer for the values a-f.
-extern NVG_EXPORT void nvgCurrentTransform(NVGcontext* ctx, float* xform);
+void nvgCurrentTransform(NVGcontext* ctx, float* xform);
 
 
 // The following functions can be used to make calculations on 2x3 transformation matrices.
 // A 2x3 matrix is represented as float[6].
 
 // Sets the transform to identity matrix.
-extern NVG_EXPORT void nvgTransformIdentity(float* dst);
+void nvgTransformIdentity(float* dst);
 
 // Sets the transform to translation matrix matrix.
-extern NVG_EXPORT void nvgTransformTranslate(float* dst, float tx, float ty);
+void nvgTransformTranslate(float* dst, float tx, float ty);
 
 // Sets the transform to scale matrix.
-extern NVG_EXPORT void nvgTransformScale(float* dst, float sx, float sy);
+void nvgTransformScale(float* dst, float sx, float sy);
 
 // Sets the transform to rotate matrix. Angle is specified in radians.
-extern NVG_EXPORT void nvgTransformRotate(float* dst, float a);
+void nvgTransformRotate(float* dst, float a);
 
 // Sets the transform to skew-x matrix. Angle is specified in radians.
-extern NVG_EXPORT void nvgTransformSkewX(float* dst, float a);
+void nvgTransformSkewX(float* dst, float a);
 
 // Sets the transform to skew-y matrix. Angle is specified in radians.
-extern NVG_EXPORT void nvgTransformSkewY(float* dst, float a);
+void nvgTransformSkewY(float* dst, float a);
 
 // Sets the transform to the result of multiplication of two transforms, of A = A*B.
-extern NVG_EXPORT void nvgTransformMultiply(float* dst, const float* src);
+void nvgTransformMultiply(float* dst, const float* src);
 
 // Sets the transform to the result of multiplication of two transforms, of A = B*A.
-extern NVG_EXPORT void nvgTransformPremultiply(float* dst, const float* src);
+void nvgTransformPremultiply(float* dst, const float* src);
 
 // Sets the destination to inverse of specified transform.
 // Returns 1 if the inverse could be calculated, else 0.
-extern NVG_EXPORT int nvgTransformInverse(float* dst, const float* src);
+int nvgTransformInverse(float* dst, const float* src);
 
 // Transform a point by given transform.
-extern NVG_EXPORT void nvgTransformPoint(float* dstx, float* dsty, const float* xform, float srcx, float srcy);
+void nvgTransformPoint(float* dstx, float* dsty, const float* xform, float srcx, float srcy);
 
 // Converts degrees to radians and vice versa.
-extern NVG_EXPORT float nvgDegToRad(float deg);
-extern NVG_EXPORT float nvgRadToDeg(float rad);
+float nvgDegToRad(float deg);
+float nvgRadToDeg(float rad);
 
 //
 // Images
@@ -381,24 +366,24 @@ extern NVG_EXPORT float nvgRadToDeg(float rad);
 
 // Creates image by loading it from the disk from specified file name.
 // Returns handle to the image.
-extern NVG_EXPORT int nvgCreateImage(NVGcontext* ctx, const char* filename, int imageFlags);
+int nvgCreateImage(NVGcontext* ctx, const char* filename, int imageFlags);
 
 // Creates image by loading it from the specified chunk of memory.
 // Returns handle to the image.
-extern NVG_EXPORT int nvgCreateImageMem(NVGcontext* ctx, int imageFlags, unsigned char* data, int ndata);
+int nvgCreateImageMem(NVGcontext* ctx, int imageFlags, unsigned char* data, int ndata);
 
 // Creates image from specified image data.
 // Returns handle to the image.
-extern NVG_EXPORT int nvgCreateImageRGBA(NVGcontext* ctx, int w, int h, int imageFlags, const unsigned char* data);
+int nvgCreateImageRGBA(NVGcontext* ctx, int w, int h, int imageFlags, const unsigned char* data);
 
 // Updates image data specified by image handle.
-extern NVG_EXPORT void nvgUpdateImage(NVGcontext* ctx, int image, const unsigned char* data);
+void nvgUpdateImage(NVGcontext* ctx, int image, const unsigned char* data);
 
 // Returns the dimensions of a created image.
-extern NVG_EXPORT void nvgImageSize(NVGcontext* ctx, int image, int* w, int* h);
+void nvgImageSize(NVGcontext* ctx, int image, int* w, int* h);
 
 // Deletes created image.
-extern NVG_EXPORT void nvgDeleteImage(NVGcontext* ctx, int image);
+void nvgDeleteImage(NVGcontext* ctx, int image);
 
 //
 // Paints
@@ -409,7 +394,7 @@ extern NVG_EXPORT void nvgDeleteImage(NVGcontext* ctx, int image);
 // Creates and returns a linear gradient. Parameters (sx,sy)-(ex,ey) specify the start and end coordinates
 // of the linear gradient, icol specifies the start color and ocol the end color.
 // The gradient is transformed by the current transform when it is passed to nvgFillPaint() or nvgStrokePaint().
-extern NVG_EXPORT NVGpaint nvgLinearGradient(NVGcontext* ctx, float sx, float sy, float ex, float ey,
+NVGpaint nvgLinearGradient(NVGcontext* ctx, float sx, float sy, float ex, float ey,
 						   NVGcolor icol, NVGcolor ocol);
 
 // Creates and returns a box gradient. Box gradient is a feathered rounded rectangle, it is useful for rendering
@@ -417,19 +402,19 @@ extern NVG_EXPORT NVGpaint nvgLinearGradient(NVGcontext* ctx, float sx, float sy
 // (w,h) define the size of the rectangle, r defines the corner radius, and f feather. Feather defines how blurry
 // the border of the rectangle is. Parameter icol specifies the inner color and ocol the outer color of the gradient.
 // The gradient is transformed by the current transform when it is passed to nvgFillPaint() or nvgStrokePaint().
-extern NVG_EXPORT NVGpaint nvgBoxGradient(NVGcontext* ctx, float x, float y, float w, float h,
+NVGpaint nvgBoxGradient(NVGcontext* ctx, float x, float y, float w, float h,
 						float r, float f, NVGcolor icol, NVGcolor ocol);
 
 // Creates and returns a radial gradient. Parameters (cx,cy) specify the center, inr and outr specify
 // the inner and outer radius of the gradient, icol specifies the start color and ocol the end color.
 // The gradient is transformed by the current transform when it is passed to nvgFillPaint() or nvgStrokePaint().
-extern NVG_EXPORT NVGpaint nvgRadialGradient(NVGcontext* ctx, float cx, float cy, float inr, float outr,
+NVGpaint nvgRadialGradient(NVGcontext* ctx, float cx, float cy, float inr, float outr,
 						   NVGcolor icol, NVGcolor ocol);
 
 // Creates and returns an image patter. Parameters (ox,oy) specify the left-top location of the image pattern,
 // (ex,ey) the size of one image, angle rotation around the top-left corner, image is handle to the image to render.
 // The gradient is transformed by the current transform when it is passed to nvgFillPaint() or nvgStrokePaint().
-extern NVG_EXPORT NVGpaint nvgImagePattern(NVGcontext* ctx, float ox, float oy, float ex, float ey,
+NVGpaint nvgImagePattern(NVGcontext* ctx, float ox, float oy, float ex, float ey,
 						 float angle, int image, float alpha);
 
 //
@@ -440,7 +425,7 @@ extern NVG_EXPORT NVGpaint nvgImagePattern(NVGcontext* ctx, float ox, float oy, 
 
 // Sets the current scissor rectangle.
 // The scissor rectangle is transformed by the current transform.
-extern NVG_EXPORT void nvgScissor(NVGcontext* ctx, float x, float y, float w, float h);
+void nvgScissor(NVGcontext* ctx, float x, float y, float w, float h);
 
 // Intersects current scissor rectangle with the specified rectangle.
 // The scissor rectangle is transformed by the current transform.
@@ -448,10 +433,10 @@ extern NVG_EXPORT void nvgScissor(NVGcontext* ctx, float x, float y, float w, fl
 // the current one, the intersection will be done between the specified
 // rectangle and the previous scissor rectangle transformed in the current
 // transform space. The resulting shape is always rectangle.
-extern NVG_EXPORT void nvgIntersectScissor(NVGcontext* ctx, float x, float y, float w, float h);
+void nvgIntersectScissor(NVGcontext* ctx, float x, float y, float w, float h);
 
 // Reset and disables scissoring.
-extern NVG_EXPORT void nvgResetScissor(NVGcontext* ctx);
+void nvgResetScissor(NVGcontext* ctx);
 
 //
 // Paths
@@ -471,54 +456,54 @@ extern NVG_EXPORT void nvgResetScissor(NVGcontext* ctx);
 // The curve segments and sub-paths are transformed by the current transform.
 
 // Clears the current path and sub-paths.
-extern NVG_EXPORT void nvgBeginPath(NVGcontext* ctx);
+void nvgBeginPath(NVGcontext* ctx);
 
 // Starts new sub-path with specified point as first point.
-extern NVG_EXPORT void nvgMoveTo(NVGcontext* ctx, float x, float y);
+void nvgMoveTo(NVGcontext* ctx, float x, float y);
 
 // Adds line segment from the last point in the path to the specified point.
-extern NVG_EXPORT void nvgLineTo(NVGcontext* ctx, float x, float y);
+void nvgLineTo(NVGcontext* ctx, float x, float y);
 
 // Adds cubic bezier segment from last point in the path via two control points to the specified point.
-extern NVG_EXPORT void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y);
+void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y);
 
 // Adds quadratic bezier segment from last point in the path via a control point to the specified point.
-extern NVG_EXPORT void nvgQuadTo(NVGcontext* ctx, float cx, float cy, float x, float y);
+void nvgQuadTo(NVGcontext* ctx, float cx, float cy, float x, float y);
 
 // Adds an arc segment at the corner defined by the last path point, and two specified points.
-extern NVG_EXPORT void nvgArcTo(NVGcontext* ctx, float x1, float y1, float x2, float y2, float radius);
+void nvgArcTo(NVGcontext* ctx, float x1, float y1, float x2, float y2, float radius);
 
 // Closes current sub-path with a line segment.
-extern NVG_EXPORT void nvgClosePath(NVGcontext* ctx);
+void nvgClosePath(NVGcontext* ctx);
 
-// Sets the current sub-path winding, see NVGwinding and NVGsolidity. 
-extern NVG_EXPORT void nvgPathWinding(NVGcontext* ctx, int dir);
+// Sets the current sub-path winding, see NVGwinding and NVGsolidity.
+void nvgPathWinding(NVGcontext* ctx, int dir);
 
 // Creates new circle arc shaped sub-path. The arc center is at cx,cy, the arc radius is r,
 // and the arc is drawn from angle a0 to a1, and swept in direction dir (NVG_CCW, or NVG_CW).
 // Angles are specified in radians.
-extern NVG_EXPORT void nvgArc(NVGcontext* ctx, float cx, float cy, float r, float a0, float a1, int dir);
+void nvgArc(NVGcontext* ctx, float cx, float cy, float r, float a0, float a1, int dir);
 
 // Creates new rectangle shaped sub-path.
-extern NVG_EXPORT void nvgRect(NVGcontext* ctx, float x, float y, float w, float h);
+void nvgRect(NVGcontext* ctx, float x, float y, float w, float h);
 
 // Creates new rounded rectangle shaped sub-path.
-extern NVG_EXPORT void nvgRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, float r);
+void nvgRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, float r);
 
 // Creates new rounded rectangle shaped sub-path with varying radii for each corner.
-extern NVG_EXPORT void nvgRoundedRectVarying(NVGcontext* ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft);
+void nvgRoundedRectVarying(NVGcontext* ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft);
 
 // Creates new ellipse shaped sub-path.
-extern NVG_EXPORT void nvgEllipse(NVGcontext* ctx, float cx, float cy, float rx, float ry);
+void nvgEllipse(NVGcontext* ctx, float cx, float cy, float rx, float ry);
 
-// Creates new circle shaped sub-path. 
-extern NVG_EXPORT void nvgCircle(NVGcontext* ctx, float cx, float cy, float r);
+// Creates new circle shaped sub-path.
+void nvgCircle(NVGcontext* ctx, float cx, float cy, float r);
 
 // Fills the current path with current fill style.
-extern NVG_EXPORT void nvgFill(NVGcontext* ctx);
+void nvgFill(NVGcontext* ctx);
 
 // Fills the current path with current stroke style.
-extern NVG_EXPORT void nvgStroke(NVGcontext* ctx);
+void nvgStroke(NVGcontext* ctx);
 
 
 //
@@ -556,73 +541,73 @@ extern NVG_EXPORT void nvgStroke(NVGcontext* ctx);
 
 // Creates font by loading it from the disk from specified file name.
 // Returns handle to the font.
-extern NVG_EXPORT int nvgCreateFont(NVGcontext* ctx, const char* name, const char* filename);
+int nvgCreateFont(NVGcontext* ctx, const char* name, const char* filename);
 
 // Creates font by loading it from the specified memory chunk.
 // Returns handle to the font.
-extern NVG_EXPORT int nvgCreateFontMem(NVGcontext* ctx, const char* name, unsigned char* data, int ndata, int freeData);
+int nvgCreateFontMem(NVGcontext* ctx, const char* name, unsigned char* data, int ndata, int freeData);
 
 // Finds a loaded font of specified name, and returns handle to it, or -1 if the font is not found.
-extern NVG_EXPORT int nvgFindFont(NVGcontext* ctx, const char* name);
+int nvgFindFont(NVGcontext* ctx, const char* name);
 
 // Adds a fallback font by handle.
-extern NVG_EXPORT int nvgAddFallbackFontId(NVGcontext* ctx, int baseFont, int fallbackFont);
+int nvgAddFallbackFontId(NVGcontext* ctx, int baseFont, int fallbackFont);
 
 // Adds a fallback font by name.
-extern NVG_EXPORT int nvgAddFallbackFont(NVGcontext* ctx, const char* baseFont, const char* fallbackFont);
+int nvgAddFallbackFont(NVGcontext* ctx, const char* baseFont, const char* fallbackFont);
 
 // Sets the font size of current text style.
-extern NVG_EXPORT void nvgFontSize(NVGcontext* ctx, float size);
+void nvgFontSize(NVGcontext* ctx, float size);
 
 // Sets the blur of current text style.
-extern NVG_EXPORT void nvgFontBlur(NVGcontext* ctx, float blur);
+void nvgFontBlur(NVGcontext* ctx, float blur);
 
 // Sets the letter spacing of current text style.
-extern NVG_EXPORT void nvgTextLetterSpacing(NVGcontext* ctx, float spacing);
+void nvgTextLetterSpacing(NVGcontext* ctx, float spacing);
 
-// Sets the proportional line height of current text style. The line height is specified as multiple of font size. 
-extern NVG_EXPORT void nvgTextLineHeight(NVGcontext* ctx, float lineHeight);
+// Sets the proportional line height of current text style. The line height is specified as multiple of font size.
+void nvgTextLineHeight(NVGcontext* ctx, float lineHeight);
 
 // Sets the text align of current text style, see NVGalign for options.
-extern NVG_EXPORT void nvgTextAlign(NVGcontext* ctx, int align);
+void nvgTextAlign(NVGcontext* ctx, int align);
 
 // Sets the font face based on specified id of current text style.
-extern NVG_EXPORT void nvgFontFaceId(NVGcontext* ctx, int font);
+void nvgFontFaceId(NVGcontext* ctx, int font);
 
 // Sets the font face based on specified name of current text style.
-extern NVG_EXPORT void nvgFontFace(NVGcontext* ctx, const char* font);
+void nvgFontFace(NVGcontext* ctx, const char* font);
 
 // Draws text string at specified location. If end is specified only the sub-string up to the end is drawn.
-extern NVG_EXPORT float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char* end);
+float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char* end);
 
 // Draws multi-line text string at specified location wrapped at the specified width. If end is specified only the sub-string up to the end is drawn.
 // White space is stripped at the beginning of the rows, the text is split at word boundaries or when new-line characters are encountered.
 // Words longer than the max width are slit at nearest character (i.e. no hyphenation).
-extern NVG_EXPORT void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end);
+void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end);
 
 // Measures the specified text string. Parameter bounds should be a pointer to float[4],
 // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
 // Returns the horizontal advance of the measured text (i.e. where the next character should drawn).
 // Measured values are returned in local coordinate space.
-extern NVG_EXPORT float nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
+float nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
 
 // Measures the specified multi-text string. Parameter bounds should be a pointer to float[4],
 // if the bounding box of the text should be returned. The bounds value are [xmin,ymin, xmax,ymax]
 // Measured values are returned in local coordinate space.
-extern NVG_EXPORT void nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds);
+void nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds);
 
 // Calculates the glyph x positions of the specified text. If end is specified only the sub-string will be used.
 // Measured values are returned in local coordinate space.
-extern NVG_EXPORT int nvgTextGlyphPositions(NVGcontext* ctx, float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions);
+int nvgTextGlyphPositions(NVGcontext* ctx, float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions);
 
 // Returns the vertical metrics based on the current text style.
 // Measured values are returned in local coordinate space.
-extern NVG_EXPORT void nvgTextMetrics(NVGcontext* ctx, float* ascender, float* descender, float* lineh);
+void nvgTextMetrics(NVGcontext* ctx, float* ascender, float* descender, float* lineh);
 
 // Breaks the specified text into lines. If end is specified only the sub-string will be used.
 // White space is stripped at the beginning of the rows, the text is split at word boundaries or when new-line characters are encountered.
 // Words longer than the max width are slit at nearest character (i.e. no hyphenation).
-extern NVG_EXPORT int nvgTextBreakLines(NVGcontext* ctx, const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows);
+int nvgTextBreakLines(NVGcontext* ctx, const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows);
 
 //
 // Internal Render API
@@ -667,22 +652,22 @@ struct NVGparams {
 	int (*renderGetTextureSize)(void* uptr, int image, int* w, int* h);
 	void (*renderViewport)(void* uptr, int width, int height, float devicePixelRatio);
 	void (*renderCancel)(void* uptr);
-	void (*renderFlush)(void* uptr, NVGcompositeOperationState compositeOperation);
-	void (*renderFill)(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe, const float* bounds, const NVGpath* paths, int npaths);
-	void (*renderStroke)(void* uptr, NVGpaint* paint, NVGscissor* scissor, float fringe, float strokeWidth, const NVGpath* paths, int npaths);
-	void (*renderTriangles)(void* uptr, NVGpaint* paint, NVGscissor* scissor, const NVGvertex* verts, int nverts);
+	void (*renderFlush)(void* uptr);
+	void (*renderFill)(void* uptr, NVGpaint* paint, NVGcompositeOperationState compositeOperation, NVGscissor* scissor, float fringe, const float* bounds, const NVGpath* paths, int npaths);
+	void (*renderStroke)(void* uptr, NVGpaint* paint, NVGcompositeOperationState compositeOperation, NVGscissor* scissor, float fringe, float strokeWidth, const NVGpath* paths, int npaths);
+	void (*renderTriangles)(void* uptr, NVGpaint* paint, NVGcompositeOperationState compositeOperation, NVGscissor* scissor, const NVGvertex* verts, int nverts);
 	void (*renderDelete)(void* uptr);
 };
 typedef struct NVGparams NVGparams;
 
 // Constructor and destructor, called by the render back-end.
-extern NVG_EXPORT NVGcontext* nvgCreateInternal(NVGparams* params);
-extern NVG_EXPORT void nvgDeleteInternal(NVGcontext* ctx);
+NVGcontext* nvgCreateInternal(NVGparams* params);
+void nvgDeleteInternal(NVGcontext* ctx);
 
-extern NVG_EXPORT NVGparams* nvgInternalParams(NVGcontext* ctx);
+NVGparams* nvgInternalParams(NVGcontext* ctx);
 
 // Debug function to dump cached path data.
-extern NVG_EXPORT void nvgDebugDumpPathCache(NVGcontext* ctx);
+void nvgDebugDumpPathCache(NVGcontext* ctx);
 
 #ifdef _MSC_VER
 #pragma warning(pop)
