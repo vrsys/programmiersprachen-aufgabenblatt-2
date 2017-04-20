@@ -1,6 +1,8 @@
 #include "window.hpp"
+#include <GLFW/glfw3.h>
 #include <utility>
 #include <cmath>
+
 
 int main(int argc, char* argv[])
 {

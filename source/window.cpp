@@ -1,12 +1,24 @@
+#define NANOVG_GLEW
+
+#include <cstdio>
+#ifdef NANOVG_GLEW
+#	include <GL/glew.h>
+#endif
+#ifdef __APPLE__
+#	define GLFW_INCLUDE_GLCOREARB
+#endif
+#define GLFW_INCLUDE_GLEXT
+#include <GLFW/glfw3.h>
+#include "nanovg.h"
+#define NANOVG_GL3_IMPLEMENTATION
+#include "nanovg_gl.h"
+
+
 #include "window.hpp"
 #include <utility>
 #include <cstring>
 #include <iostream>
 #include <cassert>
-
-#include <nanovg.h>
-#define NANOVG_GL3_IMPLEMENTATION
-#include <nanovg_gl.h>
 
 Window::Window(std::pair<int, int> const& windowsize)
   : m_window{nullptr}
@@ -19,12 +31,13 @@ Window::Window(std::pair<int, int> const& windowsize)
   glfwInit();
   //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   glfwWindowHint(GLFW_RESIZABLE, 0);
+
   m_window = glfwCreateWindow(windowsize.first, windowsize.second, m_title.c_str(), nullptr, nullptr);
 
   //  the pollable state of a mouse button will remain GLFW_PRESS until the
@@ -40,8 +53,16 @@ Window::Window(std::pair<int, int> const& windowsize)
 
     glfwMakeContextCurrent(m_window);
 
-    glewInit();
+#ifdef NANOVG_GLEW
+    if (glewInit() != GLEW_OK) {
+        throw "Could not init glew";
+    }
+    glGetError();
+#endif
     m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+    if (m_nvgContext == nullptr) {
+        throw "Could not init nanovg";
+    }
 
     m_font_normal = nvgCreateFont(m_nvgContext, "sans", "Roboto-Regular.ttf");
     if (m_font_normal == -1) {

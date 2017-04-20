@@ -1,13 +1,6 @@
 #ifndef BUW_WINDOW_HPP
 #define BUW_WINDOW_HPP
 
-#ifdef __APPLE__
-# define GLFW_INCLUDE_GLCOREARB
-#endif
-#include <GL/glew.h>
-#define GLFW_INCLUDE_GLEXT
-#include <GLFW/glfw3.h>
-
 #include <utility>
 #include <array>
 #include <string>
