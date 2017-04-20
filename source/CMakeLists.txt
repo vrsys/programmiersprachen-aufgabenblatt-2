@@ -7,7 +7,7 @@ target_link_libraries(example
   glfw
   ${GLFW_LIBRARIES}
   nanovg
-  m)
+  ${OPENGL_LIBRARIES})
 add_dependencies(example glfw nanovg ${COPY_BINARY})
 
 # Build tests
