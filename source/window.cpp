@@ -19,6 +19,14 @@
 #include <cstring>
 #include <iostream>
 #include <cassert>
+#include <exception>
+
+namespace {
+void errorcb(int error, const char* desc)
+{
+  std::cerr << "GLFW error " << error << ": " << desc << std::endl;
+}
+}
 
 Window::Window(std::pair<int, int> const& windowsize)
   : m_window{nullptr}
@@ -28,17 +36,28 @@ Window::Window(std::pair<int, int> const& windowsize)
   , m_title("Fensterchen")
   , m_font_normal{0}
 {
-  glfwInit();
+  if (!glfwInit()) {
+    throw "Could not init glfw";
+  }
+  glfwSetErrorCallback(errorcb);
   //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 
   glfwWindowHint(GLFW_RESIZABLE, 0);
 
   m_window = glfwCreateWindow(windowsize.first, windowsize.second, m_title.c_str(), nullptr, nullptr);
+  if (!m_window) {
+    glfwTerminate();
+    throw "Could not create window";
+  }
+
+  glfwMakeContextCurrent(m_window);
 
   //  the pollable state of a mouse button will remain GLFW_PRESS until the
   //  state of that button is polled with glfwGetMouseButton. Once it has been
@@ -47,39 +66,37 @@ Window::Window(std::pair<int, int> const& windowsize)
   //  GLFW_PRESS.
   glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 
-  if (m_window) {
-    glfwSetWindowUserPointer(m_window, this);
-    assert(m_window != nullptr);
+  glfwSetWindowUserPointer(m_window, this);
+  assert(m_window != nullptr);
 
-    glfwMakeContextCurrent(m_window);
 
 #ifdef NANOVG_GLEW
-    if (glewInit() != GLEW_OK) {
-        throw "Could not init glew";
-    }
-    glGetError();
-#endif
-    m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
-    if (m_nvgContext == nullptr) {
-        throw "Could not init nanovg";
-    }
-
-    m_font_normal = nvgCreateFont(m_nvgContext, "sans", "Roboto-Regular.ttf");
-    if (m_font_normal == -1) {
-      throw "Could not add font italic.";
-    }
-
-    // Begin Frame
-    glfwGetFramebufferSize(m_window, &m_framebufferSize.first, &m_framebufferSize.second);
-
-    // Calculate pixel ration for hi-dpi devices.
-    float pxRatio = float(m_framebufferSize.first) / float(m_windowSize.first);
-    glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
-    //glClearColor(1.0f,1.0f,1.0f,1.0f);
-    glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, pxRatio);
+  glewExperimental = GL_TRUE;
+  if (glewInit() != GLEW_OK) {
+      throw "Could not init glew";
   }
+  glGetError();
+#endif
+  m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+  if (m_nvgContext == nullptr) {
+      throw "Could not init nanovg";
+  }
+
+  m_font_normal = nvgCreateFont(m_nvgContext, "sans", "Roboto-Regular.ttf");
+  if (m_font_normal == -1) {
+    throw "Could not add font italic.";
+  }
+
+  // Begin Frame
+  glfwGetFramebufferSize(m_window, &m_framebufferSize.first, &m_framebufferSize.second);
+
+  // Calculate pixel ration for hi-dpi devices.
+  float pxRatio = float(m_framebufferSize.first) / float(m_windowSize.first);
+  glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
+  //glClearColor(1.0f,1.0f,1.0f,1.0f);
+  glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, pxRatio);
 }
 
 Window::~Window()
