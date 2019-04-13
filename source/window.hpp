@@ -18,7 +18,8 @@ public:
   // where (startX,startY), (endX, endY) \in [0,1)^2 and (r,g,b) \in [0,1)^3
   void draw_line(float startX, float startY,
                 float endX, float endY,
-                float r, float g, float b
+                float r, float g, float b,
+                float thickness = 1.0
                 ) const;
 
 

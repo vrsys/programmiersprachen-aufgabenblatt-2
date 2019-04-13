@@ -157,7 +157,8 @@ std::pair<int, int> Window::window_size() const
 
 void Window::draw_line(float startX, float startY,
                 float endX, float endY,
-                float r, float g, float b
+                float r, float g, float b,
+                float thickness
                 ) const
 {
   nvgSave(m_nvgContext);
@@ -166,7 +167,7 @@ void Window::draw_line(float startX, float startY,
   nvgLineCap(m_nvgContext, NVG_ROUND);
   nvgLineJoin(m_nvgContext, NVG_BEVEL);
   nvgStrokeColor(m_nvgContext, nvgRGBA(r*255.0f,g*255.0f,b*255.0f,160));
-  nvgStrokeWidth(m_nvgContext, 3.0f);
+  nvgStrokeWidth(m_nvgContext, thickness * 3.0f);
   nvgMoveTo(m_nvgContext, startX, startY);
   nvgLineTo(m_nvgContext, endX, endY);
   nvgStroke(m_nvgContext);
