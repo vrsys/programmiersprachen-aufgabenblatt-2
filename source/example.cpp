@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
       win.draw_line(30.0f, 30.0f, // FROM pixel idx with coords (x=30, y=30)
                     mouse_position.first, mouse_position.second, // TO mouse position in pixel coords
                     1.0,0.0,0.0, // color with r,g,b in [0.0, 1.0]
-                    2.0);        // line thickness = 1.0 * default thickness
+                    1.0);        // line thickness = 1.0 * default thickness
     }
 
     win.draw_line(0, mouse_position.second, 10, mouse_position.second, 0.0, 0.0, 0.0);
