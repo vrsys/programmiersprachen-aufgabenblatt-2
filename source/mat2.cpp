@@ -39,7 +39,8 @@ Mat2 transpose(Mat2 const& m) {
 	return a;
 }
 
-/*Mat2 inverse(Mat2 const& m) {
+/*
+Mat2 inverse(Mat2 const& m) {
 	float det = m.det; //funktioniert nicht wegen det?
 	if (det == 0) {
 		std::cout << "FEHLER: Zu dieser Matrix gibt es keine inverse Matrix.";

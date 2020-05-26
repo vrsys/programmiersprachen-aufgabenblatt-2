@@ -9,6 +9,9 @@
 #include <catch.hpp>
 
 #include <iostream>
+//für pi:
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 // 2.2
@@ -97,8 +100,7 @@ TEST_CASE("mat2 operators", "[mat2]") {
 	REQUIRE(c.e_11 == 2);
 	// * 2.6
 	Vec2 d{ 2, 2 };
-	Vec2 e{ 2, 4 };
-	//Vec2 e = a * d;
+	Vec2 e = a * d;
 	REQUIRE(e.x == 2);
 	REQUIRE(e.y == 4);
 }
@@ -118,7 +120,7 @@ TEST_CASE("determinant", "[mat2]") {
 
 // 2.6
 TEST_CASE("transpose", "[mat2]") {
-	Mat2 a{2, 4, 4, 1};
+	Mat2 a{ 2, 4, 4, 1 };
 	Mat2 b = transpose(a);
 	REQUIRE(b.e_00 == 2);
 	REQUIRE(b.e_10 == 4);
@@ -142,10 +144,24 @@ TEST_CASE("describe color", "[color]") {
 	REQUIRE(a.r == 0.5f);
 	REQUIRE(a.g == 0.5f);
 	REQUIRE(a.b == 0.5f);
-	Color b{1, 1, 1};
+	Color b{ 1, 1, 1 };
 	REQUIRE(b.r == 1);
 	REQUIRE(b.g == 1);
 	REQUIRE(b.b == 1);
+}
+
+// 2.9
+TEST_CASE("rechteck_circumference", "[Rechteck]") {
+	Rechteck a{ Vec2 {0, 0}, Vec2 {5, 5} };
+	float b = a.circumference();
+	REQUIRE(b == 20);
+}
+
+// 2.9
+TEST_CASE("kreis_circumference", "[Kreis]") {
+	Kreis a{ Vec2{0, 0}, 1 };
+	float b = a.circumference();
+	REQUIRE(b == Approx(2 * M_PI));
 }
 
 
