@@ -1,5 +1,6 @@
-#include "vec2.hpp" //soll das hier hin?
-#include "color.hpp" //soll das hier hin?
+#include "vec2.hpp" 
+#include "color.hpp" 
+#include "window.hpp"
 
 #ifndef KREIS_HPP
 #define KREIS_HPP
@@ -16,6 +17,7 @@ public:
 	Vec2 get_center() const;
 	*/
 	float circumference() const;
+	void draw(Window window) const;
 
 private:
 	Vec2 center_;

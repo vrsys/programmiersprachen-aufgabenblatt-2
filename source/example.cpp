@@ -3,6 +3,8 @@
 #include <utility>
 #include <cmath>
 
+#include "rechteck.hpp"
+#include "kreis.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -16,7 +18,7 @@ int main(int argc, char* argv[])
     bool left_pressed = win.get_mouse_button(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     auto t = win.get_time();
-
+    /*
     float x1 = 400.f + 380.f * std::sin(t);
     float y1 = 400.f + 380.f * std::cos(t);
 
@@ -29,14 +31,15 @@ int main(int argc, char* argv[])
     win.draw_point(x1, y1, 1.0f, 0.0f, 0.0f);
     win.draw_point(x2, y2, 0.0f, 1.0f, 0.0f);
     win.draw_point(x3, y3, 0.0f, 0.0f, 1.0f);
+    */
 
     auto mouse_position = win.mouse_position();
-    if (left_pressed) {
+    /*if (left_pressed) {
       win.draw_line(30.0f, 30.0f, // FROM pixel idx with coords (x=30, y=30)
                     mouse_position.first, mouse_position.second, // TO mouse position in pixel coords
                     1.0,0.0,0.0, // color with r,g,b in [0.0, 1.0]
                     1.0);        // line thickness = 1.0 * default thickness
-    }
+    }*/
 
     win.draw_line(0, mouse_position.second, 10, mouse_position.second, 0.0, 0.0, 0.0);
     win.draw_line(win.window_size().second - 10, mouse_position.second, win.window_size().second, mouse_position.second, 0.0, 0.0, 0.0);
@@ -51,6 +54,26 @@ int main(int argc, char* argv[])
     unsigned int font_size = 35;
     
     win.draw_text(text_offset_x, text_offset_y, font_size, display_text);
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    /* 
+    Fenstergröße: 800 x 800
+    => Koordinatensystem: Linie von (0, 400) nach (800, 400) und von (400, 0) nach (400, 800)
+    Koordinatenursprung bei (400, 400)
+
+    */
+
+    win.draw_line(0, 400, 800, 400, 1, 1, 1, 1);
+    win.draw_line(400, 0, 400, 800, 1, 1, 1, 1);
+
+    Rechteck r(Vec2{0, 0}, Vec2{100, 100});
+    r.draw(win); //fehler
+
+    Kreis k(Vec2{ 0, 0 }, 100);
+    k.draw(win); //fehler
+
+    //////////////////////////////////////////////////////////////////////////////////////
 
     win.update();
   }

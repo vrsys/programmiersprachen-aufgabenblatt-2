@@ -1,6 +1,7 @@
-#include "vec2.hpp" //soll das hier hin?
-#include "color.hpp" //soll das hier hin
+#include "vec2.hpp" 
+#include "color.hpp" 
 #include "pair.hpp"
+#include "window.hpp"
 
 #ifndef RECHTECK_HPP
 #define RECHTECK_HPP
@@ -13,6 +14,7 @@ public:
 
 	Pair side_lenghs() const;
 	float circumference() const;
+	void draw(Window window) const;
 
 private:
 	Vec2 min_; //linke untere Ecke

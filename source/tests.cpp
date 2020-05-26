@@ -164,7 +164,7 @@ TEST_CASE("kreis_circumference", "[Kreis]") {
 	REQUIRE(b == Approx(2 * M_PI));
 }
 
-
-int main(int argc, char* argv[]) {
+//ab 2.11 auskommentieren:
+/*int main(int argc, char* argv[]) {
 	return Catch::Session().run(argc, argv);
-}
+}*/
