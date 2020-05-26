@@ -1,6 +1,7 @@
 
 #include "vec2.hpp"
 #include "mat2.hpp"
+#include "color.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -124,6 +125,17 @@ TEST_CASE("inverse", "[mat2]") {
 	REQUIRE(b.e_10 == Approx(-5/13));
 	REQUIRE(b.e_01 == Approx(-3/13));
 	REQUIRE(b.e_11 == Approx(4/13));*/
+}
+
+TEST_CASE("describe color", "[color]") {
+	Color a;
+	REQUIRE(a.r == 0.5f);
+	REQUIRE(a.g == 0.5f);
+	REQUIRE(a.b == 0.5f);
+	Color b{1, 1, 1};
+	REQUIRE(b.r == 1);
+	REQUIRE(b.g == 1);
+	REQUIRE(b.b == 1);
 }
 
 
