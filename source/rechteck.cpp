@@ -19,7 +19,7 @@ Rechteck::Rechteck(Vec2 const& min, Vec2 const& max, Color const& color) :
 Rechteck::Rechteck(Vec2 const& min, Vec2 const& max) :
 	min_{ min },
 	max_{ max },
-	color_{0, 0, 0}
+	color_{ 0, 0, 0 }
 {}
 
 Pair Rechteck::side_lenghs() const {
@@ -37,39 +37,43 @@ Pair Rechteck::side_lenghs() const {
 	else {
 		y = this->min_.y - this->max_.y;
 	}
-	return Pair{x, y};
+	return Pair{ x, y };
 }
 
 float Rechteck::circumference() const {
-	Pair a{ this->side_lenghs()};
+	Pair a{ this->side_lenghs() };
 	return (a.a + a.b) * 2;
 }
 
-void Rechteck::draw(Window window) const {
+void Rechteck::draw(Window window, float thickness) const {
 	Pair a{ this->side_lenghs() };
 	//unten links nach unten rechts:
 	window.draw_line(
-		this->min_.x, this->min_.y, 
+		this->min_.x, this->min_.y,
 		this->min_.x + a.a, this->min_.y + a.b,
-		this->color_.r, this->color_.g, this->color_.b, 1
+		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//unten rechts nach oben rechts:
 	window.draw_line(
 		this->min_.x + a.a, this->min_.y + a.b,
 		this->max_.x, this->max_.y,
-		this->color_.r, this->color_.g, this->color_.b, 1
+		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//oben rechts nach oben links:
 	window.draw_line(
 		this->max_.x, this->max_.y,
 		this->max_.x - a.a, this->max_.y - a.b,
-		this->color_.r, this->color_.g, this->color_.b, 1
+		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//oben links nach unten links:
 	window.draw_line(
 		this->max_.x - a.a, this->max_.y - a.b,
 		this->min_.x, this->min_.y,
-		this->color_.r, this->color_.g, this->color_.b, 1
+		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	return;
+}
+
+void Rechteck::draw(Window window) const {
+	Rechteck::draw(window, 1);
 }

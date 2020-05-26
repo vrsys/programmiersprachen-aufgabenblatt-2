@@ -46,7 +46,7 @@ float Kreis::circumference() const {
 	return 2 * M_PI * this->radius_;
 }
 
-void Kreis::draw(Window window) const {
+void Kreis::draw(Window window, float thickness) const {
 	/*
 	1) x-Achse einteilen, z. B. Abstand 1
 	2) für jeden x-Wert den dazugehören y-Wert auf Kreis berechnen:
@@ -67,7 +67,7 @@ void Kreis::draw(Window window) const {
 		float y2 = sqrt(rr - xx);
 		window.draw_line(
 			x1, y1, x2, y2, this->color_.r, 
-			this->color_.g, this->color_.b, 1
+			this->color_.g, this->color_.b, thickness
 		);
 	}
 	//unterer Halbkreis:
@@ -82,10 +82,15 @@ void Kreis::draw(Window window) const {
 		float y2 = -1 * sqrt(rr - xx);
 		window.draw_line(
 			x1, y1, x2, y2, this->color_.r,
-			this->color_.g, this->color_.b, 1
+			this->color_.g, this->color_.b, thickness
 		);
 	}
 
+	return;
+}
+
+void Kreis::draw(Window window) const {
+	Kreis::draw(window, 1);
 	return;
 }
 

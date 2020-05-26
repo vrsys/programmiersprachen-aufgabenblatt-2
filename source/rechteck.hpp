@@ -15,6 +15,7 @@ public:
 	Pair side_lenghs() const;
 	float circumference() const;
 	void draw(Window window) const;
+	void draw(Window window, float thickness) const;
 
 private:
 	Vec2 min_; //linke untere Ecke
