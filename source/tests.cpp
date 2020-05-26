@@ -2,6 +2,8 @@
 #include "vec2.hpp"
 #include "mat2.hpp"
 #include "color.hpp"
+#include "kreis.hpp"
+#include "rechteck.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -9,6 +11,7 @@
 #include <iostream>
 
 
+// 2.2
 TEST_CASE("describe_vec2", "[vec2]") {
 	Vec2 a;
 	Vec2 b{ 5.1f, -9.3f };
@@ -18,6 +21,7 @@ TEST_CASE("describe_vec2", "[vec2]") {
 	REQUIRE(-9.3f == Approx(b.y));
 }
 
+// 2.3
 TEST_CASE("vec2 operators", "[vec2]") {
 	// +=
 	Vec2 a;
@@ -40,6 +44,7 @@ TEST_CASE("vec2 operators", "[vec2]") {
 	REQUIRE(c.y == 1);
 }
 
+// 2.4
 TEST_CASE("operators", "[vec2]") {
 	// +
 	Vec2 a{ 2, 2 };
@@ -65,8 +70,9 @@ TEST_CASE("operators", "[vec2]") {
 	REQUIRE(c.y == 6);
 }
 
+// 2.5 und 2.6
 TEST_CASE("mat2 operators", "[mat2]") {
-	// *=
+	// *= 2.5
 	Mat2 a{ 1, 0, 1, 1 };
 	Mat2 b{ 1, 1, 0, 1 };
 	a *= b;
@@ -81,7 +87,7 @@ TEST_CASE("mat2 operators", "[mat2]") {
 	REQUIRE(a.e_10 == 1);
 	REQUIRE(a.e_01 == 1);
 	REQUIRE(a.e_11 == 2);
-	// *
+	// * 2.5
 	a = Mat2{ 1, 1, 0, 1 };
 	b = Mat2{ 1, 0, 1, 1 };
 	Mat2 c = a * b;
@@ -89,7 +95,7 @@ TEST_CASE("mat2 operators", "[mat2]") {
 	REQUIRE(c.e_10 == 1);
 	REQUIRE(c.e_01 == 1);
 	REQUIRE(c.e_11 == 2);
-	// *
+	// * 2.6
 	Vec2 d{ 2, 2 };
 	Vec2 e{ 2, 4 };
 	//Vec2 e = a * d;
@@ -97,6 +103,7 @@ TEST_CASE("mat2 operators", "[mat2]") {
 	REQUIRE(e.y == 4);
 }
 
+// 2.6
 TEST_CASE("determinant", "[mat2]") {
 	Mat2 a{ 2, 2, 2, 2 };
 	Mat2 b{ 3, 2, 2, -3 };
@@ -109,6 +116,7 @@ TEST_CASE("determinant", "[mat2]") {
 	REQUIRE(c_det == -33);*/
 }
 
+// 2.6
 TEST_CASE("transpose", "[mat2]") {
 	Mat2 a{2, 4, 4, 1};
 	Mat2 b = transpose(a);
@@ -118,6 +126,7 @@ TEST_CASE("transpose", "[mat2]") {
 	REQUIRE(b.e_11 == 1);
 }
 
+// 2.6
 TEST_CASE("inverse", "[mat2]") {
 	Mat2 a{ 4, 5, 3, 7 };
 	/*Mat2 b = inverse(a); //funktioniert nicht wegen det?
@@ -127,6 +136,7 @@ TEST_CASE("inverse", "[mat2]") {
 	REQUIRE(b.e_11 == Approx(4/13));*/
 }
 
+// 2.7
 TEST_CASE("describe color", "[color]") {
 	Color a;
 	REQUIRE(a.r == 0.5f);

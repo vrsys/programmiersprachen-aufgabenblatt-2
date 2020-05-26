@@ -27,12 +27,12 @@ Mat2 operator*(Mat2 const& m1, Mat2 const& m2) {
 	return a;
 }
 
-/*Vec2 operator*(Mat2 const& m, Vec2 const& v) {
+Vec2 operator*(Mat2 const& m, Vec2 const& v) {
 	Vec2 a{};
 	a.x = m.e_00 * v.x + m.e_01 * v.y;
 	a.y = m.e_10 * v.x + m.e_11 * v.y;
 	return a;
-}*/
+}
 
 Mat2 transpose(Mat2 const& m) {
 	Mat2 a{ m.e_00, m.e_01, m.e_10, m.e_11 };
