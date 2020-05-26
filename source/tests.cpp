@@ -1,5 +1,6 @@
 
 #include "vec2.hpp"
+#include "mat2.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -16,7 +17,7 @@ TEST_CASE("describe_vec2", "[vec2]") {
 	REQUIRE(-9.3f == Approx(b.y));
 }
 
-TEST_CASE("vec2 operators") {
+TEST_CASE("vec2 operators", "[vec2]") {
 	// +=
 	Vec2 a;
 	Vec2 b{ 1.0f, 1.0f };
@@ -38,7 +39,7 @@ TEST_CASE("vec2 operators") {
 	REQUIRE(c.y == 1.0f);
 }
 
-TEST_CASE("operators") {
+TEST_CASE("operators", "[vec2]") {
 	// +
 	Vec2 a{2.0f, 2.0f};
 	Vec2 b{ 3.0f, 3.0f };
@@ -61,6 +62,32 @@ TEST_CASE("operators") {
 	c = 2 * b;
 	REQUIRE(c.x == 6.0f);
 	REQUIRE(c.y == 6.0f);
+}
+
+TEST_CASE("mat2 operators", "[mat2]") {
+	// *=
+	Mat2 a{1, 0, 1, 1};
+	Mat2 b{ 1, 1, 0, 1 };
+	a *= b;
+	REQUIRE(a.e_00 == 2);
+	REQUIRE(a.e_10 == 1);
+	REQUIRE(a.e_01 == 1);
+	REQUIRE(a.e_11 == 1);
+	a = Mat2{ 1, 1, 0, 1 };
+	b = Mat2{ 1, 0, 1, 1 };
+	a *= b;
+	REQUIRE(a.e_00 == 1);
+	REQUIRE(a.e_10 == 1);
+	REQUIRE(a.e_01 == 1);
+	REQUIRE(a.e_11 == 2);
+	// *
+	a = Mat2{ 1, 1, 0, 1 };
+	b = Mat2{ 1, 0, 1, 1 };
+	Mat2 c = a * b;
+	REQUIRE(c.e_00 == 1);
+	REQUIRE(c.e_10 == 1);
+	REQUIRE(c.e_01 == 1);
+	REQUIRE(c.e_11 == 2);
 }
 
 int main(int argc, char *argv[])
