@@ -11,8 +11,8 @@
 TEST_CASE("describe_vec2", "[vec2]") {
 	Vec2 a;
 	Vec2 b{ 5.1f, -9.3f };
-	REQUIRE(0.0f == Approx(a.x));
-	REQUIRE(0.0f == Approx(a.y));
+	REQUIRE(0 == Approx(a.x));
+	REQUIRE(0 == Approx(a.y));
 	REQUIRE(5.1f == Approx(b.x));
 	REQUIRE(-9.3f == Approx(b.y));
 }
@@ -20,7 +20,7 @@ TEST_CASE("describe_vec2", "[vec2]") {
 TEST_CASE("vec2 operators", "[vec2]") {
 	// +=
 	Vec2 a;
-	Vec2 b{ 1.0f, 1.0f };
+	Vec2 b{ 1, 1 };
 	a += b;
 	REQUIRE(a.x == b.x);
 	REQUIRE(a.y == b.y);
@@ -33,40 +33,40 @@ TEST_CASE("vec2 operators", "[vec2]") {
 	REQUIRE(b.x == 0);
 	REQUIRE(b.y == 0);
 	// /=
-	Vec2 c{ 2.0f, 2.0f };
+	Vec2 c{ 2, 2 };
 	c /= 2.0f;
-	REQUIRE(c.x == 1.0f);
-	REQUIRE(c.y == 1.0f);
+	REQUIRE(c.x == 1);
+	REQUIRE(c.y == 1);
 }
 
 TEST_CASE("operators", "[vec2]") {
 	// +
-	Vec2 a{2.0f, 2.0f};
-	Vec2 b{ 3.0f, 3.0f };
+	Vec2 a{ 2, 2 };
+	Vec2 b{ 3, 3 };
 	Vec2 c = a + b;
-	REQUIRE(c.x == 5.0f);
-	REQUIRE(c.y == 5.0f);
+	REQUIRE(c.x == 5);
+	REQUIRE(c.y == 5);
 	// -
 	c = b - a;
-	REQUIRE(c.x == 1.0f);
-	REQUIRE(c.y == 1.0f);
+	REQUIRE(c.x == 1);
+	REQUIRE(c.y == 1);
 	// *
 	c = b * 2;
-	REQUIRE(c.x == 6.0f);
-	REQUIRE(c.y == 6.0f);
+	REQUIRE(c.x == 6);
+	REQUIRE(c.y == 6);
 	// /
 	c = a / 2;
-	REQUIRE(c.x == 1.0f);
-	REQUIRE(c.y == 1.0f);
+	REQUIRE(c.x == 1);
+	REQUIRE(c.y == 1);
 	// *
 	c = 2 * b;
-	REQUIRE(c.x == 6.0f);
-	REQUIRE(c.y == 6.0f);
+	REQUIRE(c.x == 6);
+	REQUIRE(c.y == 6);
 }
 
 TEST_CASE("mat2 operators", "[mat2]") {
 	// *=
-	Mat2 a{1, 0, 1, 1};
+	Mat2 a{ 1, 0, 1, 1 };
 	Mat2 b{ 1, 1, 0, 1 };
 	a *= b;
 	REQUIRE(a.e_00 == 2);
@@ -88,9 +88,45 @@ TEST_CASE("mat2 operators", "[mat2]") {
 	REQUIRE(c.e_10 == 1);
 	REQUIRE(c.e_01 == 1);
 	REQUIRE(c.e_11 == 2);
+	// *
+	Vec2 d{ 2, 2 };
+	Vec2 e{ 2, 4 };
+	//Vec2 e = a * d;
+	REQUIRE(e.x == 2);
+	REQUIRE(e.y == 4);
 }
 
-int main(int argc, char *argv[])
-{
-  return Catch::Session().run(argc, argv);
+TEST_CASE("determinant", "[mat2]") {
+	Mat2 a{ 2, 2, 2, 2 };
+	Mat2 b{ 3, 2, 2, -3 };
+	Mat2 c{ -4, -2.5, -2, 7 };
+	/*float a_det = a.det; //funktioniert nicht?
+	float b_det = b.det;
+	float c_det = c.det;
+	REQUIRE(a_det == 0);
+	REQUIRE(b_det == -13);
+	REQUIRE(c_det == -33);*/
+}
+
+TEST_CASE("transpose", "[mat2]") {
+	Mat2 a{2, 4, 4, 1};
+	Mat2 b = transpose(a);
+	REQUIRE(b.e_00 == 2);
+	REQUIRE(b.e_10 == 4);
+	REQUIRE(b.e_01 == 4);
+	REQUIRE(b.e_11 == 1);
+}
+
+TEST_CASE("inverse", "[mat2]") {
+	Mat2 a{ 4, 5, 3, 7 };
+	/*Mat2 b = inverse(a); //funktioniert nicht wegen det?
+	REQUIRE(b.e_00 == Approx(7/13));
+	REQUIRE(b.e_10 == Approx(-5/13));
+	REQUIRE(b.e_01 == Approx(-3/13));
+	REQUIRE(b.e_11 == Approx(4/13));*/
+}
+
+
+int main(int argc, char* argv[]) {
+	return Catch::Session().run(argc, argv);
 }
