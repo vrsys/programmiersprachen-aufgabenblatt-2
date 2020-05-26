@@ -3,6 +3,9 @@
 #include "vec2.hpp"
 #include "color.hpp"
 #include "window.hpp"
+#include "rechteck.hpp"
+
+#include <iostream>
 
 //für pi:
 #define _USE_MATH_DEFINES
@@ -47,6 +50,10 @@ float Kreis::circumference() const {
 }
 
 void Kreis::draw(Window& window, float const& thickness) const {
+	float line = thickness;
+	if (is_inside(window, *this)) {
+		line *= 2;
+	}
 	/*
 	1) x-Achse einteilen, z. B. Abstand 1
 	2) für jeden x-Wert den dazugehören y-Wert auf Kreis berechnen:
@@ -68,7 +75,7 @@ void Kreis::draw(Window& window, float const& thickness) const {
 		window.draw_line(
 			x1 + this->center_.x, y1 + this->center_.y, x2 +
 			this->center_.x, y2 + this->center_.y,
-			this->color_.r, this->color_.g, this->color_.b, thickness
+			this->color_.r, this->color_.g, this->color_.b, line
 		);
 	}
 	//unterer Halbkreis:
@@ -84,7 +91,7 @@ void Kreis::draw(Window& window, float const& thickness) const {
 		window.draw_line(
 			x1 + this->center_.x, y1 + this->center_.y, x2 +
 			this->center_.x, y2 + this->center_.y,
-			this->color_.r, this->color_.g, this->color_.b, thickness
+			this->color_.r, this->color_.g, this->color_.b, line
 		);
 	}
 
@@ -94,6 +101,25 @@ void Kreis::draw(Window& window, float const& thickness) const {
 void Kreis::draw(Window& window) const {
 	Kreis::draw(window, 1);
 	return;
+}
+
+Rechteck Kreis::bounding_box() const {
+	Rechteck bb{ Vec2{this->center_.x - this->radius_, this->center_.y - this->radius_}, 
+		Vec2{this->center_.x + this->radius_, this->center_.y + this->radius_} };
+	return bb;
+}
+
+bool is_inside(Window& window, Kreis const& kreis) {
+	auto mouse = window.mouse_position();
+	Rechteck bb = kreis.bounding_box();
+	Vec2 bb_min = bb.min();
+	Vec2 bb_max = bb.max();
+	//bb.draw(window);
+	if (bb_min.x <= mouse.first && mouse.first <= bb_max.x &&
+		bb_min.y <= mouse.second && mouse.second <= bb_max.y) {
+		return true;
+	}
+	return false;
 }
 
 

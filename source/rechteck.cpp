@@ -4,6 +4,8 @@
 #include "pair.hpp"
 #include "window.hpp"
 
+#include <iostream>
+
 Rechteck::Rechteck(Rechteck const& rechteck) {
 	this->max_ = rechteck.max_;
 	this->min_ = rechteck.min_;
@@ -21,6 +23,14 @@ Rechteck::Rechteck(Vec2 const& min, Vec2 const& max) :
 	max_{ max },
 	color_{ 0, 0, 0 }
 {}
+
+Vec2 const& Rechteck::min() const {
+	return this->min_;
+}
+
+Vec2 const& Rechteck::max() const {
+	return this->max_;
+}
 
 Pair Rechteck::side_lenghs() const {
 	float x;
@@ -45,39 +55,50 @@ float Rechteck::circumference() const {
 	return (a.a + a.b) * 2;
 }
 
-void Rechteck::draw(Window & window, float const& thickness) const {
+void Rechteck::draw(Window& window, float const& thickness) const {
+	float line = thickness;
+	if (is_inside(window, *this)) {
+		line *= 2;
+	}
 	Pair a{ this->side_lenghs() };
 	//unten links nach unten rechts:
 	window.draw_line(
 		this->min_.x, this->min_.y,
 		this->min_.x + a.a, this->min_.y,
-		this->color_.r, this->color_.g, this->color_.b, thickness
+		this->color_.r, this->color_.g, this->color_.b, line
 	);
 	//unten rechts nach oben rechts:
 	window.draw_line(
 		this->min_.x + a.a, this->min_.y,
 		this->max_.x, this->max_.y,
-		this->color_.r, this->color_.g, this->color_.b, thickness
+		this->color_.r, this->color_.g, this->color_.b, line
 	);
 	//oben rechts nach oben links:
 	window.draw_line(
 		this->max_.x, this->max_.y,
 		this->max_.x - a.a, this->max_.y,
-		this->color_.r, this->color_.g, this->color_.b, thickness
+		this->color_.r, this->color_.g, this->color_.b, line
 	);
 	//oben links nach unten links:
 	window.draw_line(
 		this->max_.x - a.a, this->max_.y,
 		this->min_.x, this->min_.y,
-		this->color_.r, this->color_.g, this->color_.b, thickness
+		this->color_.r, this->color_.g, this->color_.b, line
 	);
 	return;
 }
 
-void Rechteck::draw(Window & window) const {
+void Rechteck::draw(Window& window) const {
 	Rechteck::draw(window, 1);
 }
 
-bool Rechteck::is_inside(std::pair<double, double> const& mouse) const {
-	return true;
+bool is_inside(Window & window, Rechteck const& rechteck) {
+	auto mouse = window.mouse_position();
+	Vec2 r_min = rechteck.min();
+	Vec2 r_max = rechteck.max();
+	if (r_min.x <= mouse.first && mouse.first <= r_max.x &&
+		r_min.x >= mouse.second && mouse.second >= r_max.y) {
+		return true;
+	}
+	return false;
 }

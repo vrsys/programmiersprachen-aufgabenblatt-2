@@ -1,6 +1,7 @@
 #include "vec2.hpp" 
 #include "color.hpp" 
 #include "window.hpp"
+#include "rechteck.hpp"
 
 #ifndef KREIS_HPP
 #define KREIS_HPP
@@ -19,11 +20,14 @@ public:
 	float circumference() const;
 	void draw(Window & window, float const& thickness) const;
 	void draw(Window & window) const;
+	Rechteck bounding_box() const;
 
 private:
 	Vec2 center_;
 	float radius_;
 	Color color_;
 };
+
+bool is_inside(Window& window, Kreis const& kreis);
 
 #endif
