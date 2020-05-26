@@ -47,9 +47,8 @@ float Rechteck::circumference() const {
 
 void Rechteck::draw(Window window) const {
 	Pair a{ this->side_lenghs() };
-	window.draw_line(0, 0, 100, 100, 1, 1, 1, 1);
 	//unten links nach unten rechts:
-	/*window.draw_line(
+	window.draw_line(
 		this->min_.x, this->min_.y, 
 		this->min_.x + a.a, this->min_.y + a.b,
 		this->color_.r, this->color_.g, this->color_.b, 1
@@ -71,6 +70,6 @@ void Rechteck::draw(Window window) const {
 		this->max_.x - a.a, this->max_.y - a.b,
 		this->min_.x, this->min_.y,
 		this->color_.r, this->color_.g, this->color_.b, 1
-	);*/
+	);
 	return;
 }
