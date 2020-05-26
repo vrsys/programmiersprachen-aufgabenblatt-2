@@ -17,8 +17,8 @@ public:
 	Vec2 get_center() const;
 	*/
 	float circumference() const;
-	void draw(Window window, float thickness) const;
-	void draw(Window window) const;
+	void draw(Window & window, float const& thickness) const;
+	void draw(Window & window) const;
 
 private:
 	Vec2 center_;

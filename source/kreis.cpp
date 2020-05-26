@@ -46,7 +46,7 @@ float Kreis::circumference() const {
 	return 2 * M_PI * this->radius_;
 }
 
-void Kreis::draw(Window window, float thickness) const {
+void Kreis::draw(Window& window, float const& thickness) const {
 	/*
 	1) x-Achse einteilen, z. B. Abstand 1
 	2) für jeden x-Wert den dazugehören y-Wert auf Kreis berechnen:
@@ -56,7 +56,7 @@ void Kreis::draw(Window window, float thickness) const {
 	float r = this->radius_;
 	float rr = r * r;
 	//oberer Halbkreis:
-	for (int x = -r; x < r; x += 2) {
+	for (int x = -r; x <= r; x += 2) {
 		//erster Punkt:
 		float x1 = x;
 		float xx = x1 * x1;
@@ -66,12 +66,13 @@ void Kreis::draw(Window window, float thickness) const {
 		xx = x2 * x2;
 		float y2 = sqrt(rr - xx);
 		window.draw_line(
-			x1, y1, x2, y2, this->color_.r, 
-			this->color_.g, this->color_.b, thickness
+			x1 + this->center_.x, y1 + this->center_.y, x2 +
+			this->center_.x, y2 + this->center_.y,
+			this->color_.r, this->color_.g, this->color_.b, thickness
 		);
 	}
 	//unterer Halbkreis:
-	for (int x = -r; x < r; x += 2) {
+	for (int x = -r; x <= r; x += 2) {
 		//erster Punkt:
 		float x1 = x;
 		float xx = x1 * x1;
@@ -81,15 +82,16 @@ void Kreis::draw(Window window, float thickness) const {
 		xx = x2 * x2;
 		float y2 = -1 * sqrt(rr - xx);
 		window.draw_line(
-			x1, y1, x2, y2, this->color_.r,
-			this->color_.g, this->color_.b, thickness
+			x1 + this->center_.x, y1 + this->center_.y, x2 +
+			this->center_.x, y2 + this->center_.y,
+			this->color_.r, this->color_.g, this->color_.b, thickness
 		);
 	}
 
 	return;
 }
 
-void Kreis::draw(Window window) const {
+void Kreis::draw(Window& window) const {
 	Kreis::draw(window, 1);
 	return;
 }

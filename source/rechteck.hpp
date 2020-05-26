@@ -14,8 +14,9 @@ public:
 
 	Pair side_lenghs() const;
 	float circumference() const;
-	void draw(Window window) const;
-	void draw(Window window, float thickness) const;
+	void draw(Window & window) const;
+	void draw(Window & window, float const& thickness) const;
+	bool is_inside(std::pair<double, double> const& mouse) const;
 
 private:
 	Vec2 min_; //linke untere Ecke

@@ -45,35 +45,39 @@ float Rechteck::circumference() const {
 	return (a.a + a.b) * 2;
 }
 
-void Rechteck::draw(Window window, float thickness) const {
+void Rechteck::draw(Window & window, float const& thickness) const {
 	Pair a{ this->side_lenghs() };
 	//unten links nach unten rechts:
 	window.draw_line(
 		this->min_.x, this->min_.y,
-		this->min_.x + a.a, this->min_.y + a.b,
+		this->min_.x + a.a, this->min_.y,
 		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//unten rechts nach oben rechts:
 	window.draw_line(
-		this->min_.x + a.a, this->min_.y + a.b,
+		this->min_.x + a.a, this->min_.y,
 		this->max_.x, this->max_.y,
 		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//oben rechts nach oben links:
 	window.draw_line(
 		this->max_.x, this->max_.y,
-		this->max_.x - a.a, this->max_.y - a.b,
+		this->max_.x - a.a, this->max_.y,
 		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	//oben links nach unten links:
 	window.draw_line(
-		this->max_.x - a.a, this->max_.y - a.b,
+		this->max_.x - a.a, this->max_.y,
 		this->min_.x, this->min_.y,
 		this->color_.r, this->color_.g, this->color_.b, thickness
 	);
 	return;
 }
 
-void Rechteck::draw(Window window) const {
+void Rechteck::draw(Window & window) const {
 	Rechteck::draw(window, 1);
+}
+
+bool Rechteck::is_inside(std::pair<double, double> const& mouse) const {
+	return true;
 }

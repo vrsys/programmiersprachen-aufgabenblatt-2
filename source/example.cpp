@@ -66,19 +66,20 @@ int main(int argc, char* argv[])
 
     win.draw_line(0, 400, 800, 400, 1, 1, 1, 1);
     win.draw_line(400, 0, 400, 800, 1, 1, 1, 1);
+    
+    Rechteck r1(Vec2{400, 400}, Vec2{500, 300});
+    r1.draw(win); 
+    
+    Rechteck r2(Vec2{ 500, 500 }, Vec2{ 600, 300 });
+    r2.draw(win, 5); 
+    
 
-    Rechteck r1(Vec2{0, 0}, Vec2{100, 100});
-    r1.draw(win); //fehler
-
-    Rechteck r2(Vec2{ 1, 1 }, Vec2{ 200, 200 });
-    r2.draw(win, 5); //fehler
-
-    Kreis k1(Vec2{ 0, 0 }, 100);
-    k1.draw(win); //fehler
-
-    Kreis k2{ Vec2{1, 1}, 200 };
-    k2.draw(win, 5); //fehler
-
+    Kreis k1(Vec2{ 400, 400 }, 100);
+    k1.draw(win); 
+    
+    Kreis k2{ Vec2{500, 500}, 200 };
+    k2.draw(win, 5); 
+    
     //////////////////////////////////////////////////////////////////////////////////////
 
     win.update();
