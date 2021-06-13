@@ -1,3 +1,4 @@
+#include "vec2.hpp"
 #include "window.hpp"
 #include <GLFW/glfw3.h>
 #include <utility>
@@ -6,6 +7,9 @@
 
 int main(int argc, char* argv[])
 {
+
+    vec2 point_1{1.0f, 2.0};
+
   Window win{std::make_pair(800,800)};
 
   while (!win.should_close()) {
@@ -46,8 +50,8 @@ int main(int argc, char* argv[])
 
     std::string display_text = "mouse position: (" + std::to_string(mouse_position.first) + ", " + std::to_string(mouse_position.second) + ")";
     
-    int text_offset_x = 10;
-    int text_offset_y = 5;
+    float text_offset_x = 10.0f;
+    float text_offset_y =  5.0f;
     unsigned int font_size = 35;
     
     win.draw_text(text_offset_x, text_offset_y, font_size, display_text);
