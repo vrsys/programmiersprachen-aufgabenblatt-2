@@ -8,8 +8,6 @@
 int main(int argc, char* argv[])
 {
 
-    vec2 point_1{1.0f, 2.0};
-
   Window win{std::make_pair(800,800)};
 
   while (!win.should_close()) {
