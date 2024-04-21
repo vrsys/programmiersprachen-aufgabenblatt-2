@@ -1,6 +1,8 @@
+#include "Roboto-Regular_ttf_binary.h"
+
 #define NANOVG_GLEW
 
-#include <cstdio>
+
 #ifdef NANOVG_GLEW
 #	include <GL/glew.h>
 #endif
@@ -9,12 +11,16 @@
 #endif
 #define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
+
 #include "nanovg.h"
 #define NANOVG_GL3_IMPLEMENTATION
 #include "nanovg_gl.h"
 
 
 #include "window.hpp"
+
+#include <cstdio>
+
 #include <utility>
 #include <cstring>
 #include <iostream>
@@ -79,12 +85,14 @@ Window::Window(std::pair<int, int> const& windowsize)
 #endif
   m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
   if (m_nvgContext == nullptr) {
+      std::cout << "Could not init nanovg" << std::endl;
       throw "Could not init nanovg";
   }
 
-  m_font_normal = nvgCreateFont(m_nvgContext, "sans", "Roboto-Regular.ttf");
+  m_font_normal = nvgCreateFontMem(m_nvgContext, "sans", (unsigned char*)(Roboto_Regular_ttf.data()), Roboto_Regular_ttf.size(), 0);
   if (m_font_normal == -1) {
-    throw "Could not add font italic.";
+    std::cout << "Could not load font file" << std::endl;
+    throw "Could not load font file.";
   }
 
   // Begin Frame
