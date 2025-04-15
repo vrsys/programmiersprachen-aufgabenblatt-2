@@ -1,14 +1,15 @@
-#include <vec2.hpp>
-#include "window.hpp"
-#include <GLFW/glfw3.h>
-#include <utility>
-#include <cmath>
+#include <vec2.hpp> //access to our own buw::Vec2 datatype
+#include <window.hpp> //access to our own buw::Window datatype
 
+#include <GLFW/glfw3.h> //access to GLFW key and mouse constants which we did not wrap further 
+
+#include <cmath> //access to std::sin and std::cos
 
 int main(int argc, char* argv[])
 {
   buw::Window win{std::make_pair(800,800)};
 
+  //this is basically a main/draw-loop
   while (!win.should_close()) {
     if (win.get_key(GLFW_KEY_ESCAPE) == GLFW_PRESS) {
       win.close();
@@ -18,18 +19,18 @@ int main(int argc, char* argv[])
 
     auto t = win.get_time();
 
-    double x1 = 400.0 + 380.0 * std::sin(t);
-    double y1 = 400.0 + 380.0 * std::cos(t);
+    double pos_x_1 = 400.0 + 380.0 * std::sin(t);
+    double pos_y_1 = 400.0 + 380.0 * std::cos(t);
 
-    double x2 = 400.0 + 380.0 * std::sin(2.0*t);
-    double y2 = 400.0 + 380.0 * std::cos(2.0*t);
+    double pos_x_2 = 400.0 + 380.0 * std::sin(2.0*t);
+    double pos_y_2 = 400.0 + 380.0 * std::cos(2.0*t);
 
-    double x3 = 400.0 + 380.0 * std::sin(t-10.0);
-    double y3 = 400.0 + 380.0 * std::cos(t-10.0);
+    double pos_x_3 = 400.0 + 380.0 * std::sin(t-10.0);
+    double pos_y_3 = 400.0 + 380.0 * std::cos(t-10.0);
 
-    win.draw_point(x1, y1, 1.0, 0.0, 0.0);
-    win.draw_point(x2, y2, 0.0, 1.0, 0.0);
-    win.draw_point(x3, y3, 0.0, 0.0, 1.0);
+    win.draw_point(pos_x_1, pos_y_1, 1.0, 0.0, 0.0);
+    win.draw_point(pos_x_2, pos_y_2, 0.0, 1.0, 0.0);
+    win.draw_point(pos_x_3, pos_y_3, 0.0, 0.0, 1.0);
 
     auto mouse_position = win.mouse_position();
     if (left_pressed) {
@@ -45,11 +46,11 @@ int main(int argc, char* argv[])
     win.draw_line(mouse_position.first, 0, mouse_position.first, 10, 0.0, 0.0, 0.0);
     win.draw_line(mouse_position.first, win.window_size().second - 10, mouse_position.first, win.window_size().second, 0.0, 0.0, 0.0);
 
-    std::string display_text = "mouse position: (" + std::to_string(mouse_position.first) + ", " + std::to_string(mouse_position.second) + ")";
+    std::string display_text = "Press ESC to quit.        Mouse Position: (" + std::to_string(mouse_position.first) + ", " + std::to_string(mouse_position.second) + ")";
     
     double text_offset_x = 10.0;
     double text_offset_y =  5.0;
-    unsigned int font_size = 35;
+    double font_size = 35;
     
     win.draw_text(text_offset_x, text_offset_y, font_size, display_text);
 
