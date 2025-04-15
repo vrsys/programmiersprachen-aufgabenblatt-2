@@ -3,7 +3,6 @@ set(FRAMEWORK_DATA_TYPE_FILES
 	circle.hpp
 	circle.cpp
 	color.hpp
-	color.cpp
 	mat2.hpp
 	mat2.cpp
 	rectangle.hpp
