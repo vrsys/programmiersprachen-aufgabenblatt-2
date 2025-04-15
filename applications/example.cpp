@@ -18,18 +18,18 @@ int main(int argc, char* argv[])
 
     auto t = win.get_time();
 
-    double x1 = 400.f + 380.f * std::sin(t);
-    double y1 = 400.f + 380.f * std::cos(t);
+    double x1 = 400.0 + 380.0 * std::sin(t);
+    double y1 = 400.0 + 380.0 * std::cos(t);
 
-    double x2 = 400.f + 380.f * std::sin(2.0f*t);
-    double y2 = 400.f + 380.f * std::cos(2.0f*t);
+    double x2 = 400.0 + 380.0 * std::sin(2.0*t);
+    double y2 = 400.0 + 380.0 * std::cos(2.0*t);
 
-    double x3 = 400.f + 380.f * std::sin(t-10.f);
-    double y3 = 400.f + 380.f * std::cos(t-10.f);
+    double x3 = 400.0 + 380.0 * std::sin(t-10.0);
+    double y3 = 400.0 + 380.0 * std::cos(t-10.0);
 
-    win.draw_point(x1, y1, 1.0f, 0.0f, 0.0f);
-    win.draw_point(x2, y2, 0.0f, 1.0f, 0.0f);
-    win.draw_point(x3, y3, 0.0f, 0.0f, 1.0f);
+    win.draw_point(x1, y1, 1.0, 0.0, 0.0);
+    win.draw_point(x2, y2, 0.0, 1.0, 0.0);
+    win.draw_point(x3, y3, 0.0, 0.0, 1.0);
 
     auto mouse_position = win.mouse_position();
     if (left_pressed) {
@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 
     std::string display_text = "mouse position: (" + std::to_string(mouse_position.first) + ", " + std::to_string(mouse_position.second) + ")";
     
-    double text_offset_x = 10.0f;
-    double text_offset_y =  5.0f;
+    double text_offset_x = 10.0;
+    double text_offset_y =  5.0;
     unsigned int font_size = 35;
     
     win.draw_text(text_offset_x, text_offset_y, font_size, display_text);
