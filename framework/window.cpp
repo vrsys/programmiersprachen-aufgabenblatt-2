@@ -35,15 +35,15 @@ void errorcb(int error, const char* desc)
 
 namespace buw {
     Window::Window(std::pair<int, int> const& windowsize)
-        : m_window{ nullptr }
-        , m_nvgContext{ nullptr }
-        , m_windowSize{ windowsize }
-        , m_framebufferSize{ windowsize }
-        , m_title("Fensterchen")
-        , m_font_normal{ 0 }
+        : window_{ nullptr }
+        , nanovg_context_{ nullptr }
+        , window_size_{ windowsize }
+        , framebuffer_size_{ windowsize }
+        , title_("Programmiersprachen Aufgabenblatt 2")
+        , normal_font_{ 0 }
     {
         if (!glfwInit()) {
-            throw "Could not init glfw";
+            throw "Could not initialize GLFW";
         }
         glfwSetErrorCallback(errorcb);
         //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
@@ -53,27 +53,28 @@ namespace buw {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+#ifdef _DEBUG
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-
+#endif //DEBUG
         glfwWindowHint(GLFW_RESIZABLE, 0);
 
-        m_window = glfwCreateWindow(windowsize.first, windowsize.second, m_title.c_str(), nullptr, nullptr);
-        if (!m_window) {
+        window_ = glfwCreateWindow(windowsize.first, windowsize.second, title_.c_str(), nullptr, nullptr);
+        if (!window_) {
             glfwTerminate();
             throw "Could not create window";
         }
 
-        glfwMakeContextCurrent(m_window);
+        glfwMakeContextCurrent(window_);
 
         //  the pollable state of a mouse button will remain GLFW_PRESS until the
         //  state of that button is polled with glfwGetMouseButton. Once it has been
         //  polled, if a mouse button release event had been processed in the
         //  meantime, the state will reset to GLFW_RELEASE, otherwise it will remain
         //  GLFW_PRESS.
-        glfwSetInputMode(m_window, GLFW_STICKY_MOUSE_BUTTONS, 1);
+        glfwSetInputMode(window_, GLFW_STICKY_MOUSE_BUTTONS, 1);
 
-        glfwSetWindowUserPointer(m_window, this);
-        assert(m_window != nullptr);
+        glfwSetWindowUserPointer(window_, this);
+        assert(window_ != nullptr);
 
 
 #ifdef NANOVG_GLEW
@@ -83,28 +84,28 @@ namespace buw {
         }
         glGetError();
 #endif
-        m_nvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
-        if (m_nvgContext == nullptr) {
+        nanovg_context_ = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+        if (nanovg_context_ == nullptr) {
             std::cout << "Could not init nanovg" << std::endl;
             throw "Could not init nanovg";
         }
 
-        m_font_normal = nvgCreateFontMem(m_nvgContext, "sans", (unsigned char*)(Roboto_Regular_ttf_binarized.data()), Roboto_Regular_ttf_binarized.size(), 0);
-        if (m_font_normal == -1) {
+        normal_font_ = nvgCreateFontMem(nanovg_context_, "sans", (unsigned char*)(Roboto_Regular_ttf_binarized.data()), static_cast<int>(Roboto_Regular_ttf_binarized.size()), 0);
+        if (normal_font_ == -1) {
             std::cout << "Could not load font file" << std::endl;
             throw "Could not load font file.";
         }
 
         // Begin Frame
-        glfwGetFramebufferSize(m_window, &m_framebufferSize.first, &m_framebufferSize.second);
+        glfwGetFramebufferSize(window_, &framebuffer_size_.first, &framebuffer_size_.second);
 
-        // Calculate pixel ration for hi-dpi devices.
-        double pxRatio = double(m_framebufferSize.first) / double(m_windowSize.first);
-        glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
-        //glClearColor(1.0f,1.0f,1.0f,1.0f);
+        // Calculate pixel ratio for hi-dpi devices.
+        double pixel_aspect_ratio = double(framebuffer_size_.first) / double(window_size_.first);
+        glViewport(0, 0, framebuffer_size_.first, framebuffer_size_.second);
+
         glClearColor(0.3f, 0.3f, 0.32f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, pxRatio);
+        nvgBeginFrame(nanovg_context_, window_size_.first, window_size_.second, static_cast<float>(pixel_aspect_ratio));
     }
 
     Window::~Window()
@@ -114,52 +115,52 @@ namespace buw {
 
     int Window::get_key(int key) const
     {
-        return glfwGetKey(m_window, key);
+        return glfwGetKey(window_, key);
     }
 
     int Window::get_mouse_button(int button) const
     {
-        return glfwGetMouseButton(m_window, button);
+        return glfwGetMouseButton(window_, button);
     }
 
     bool Window::should_close() const
     {
-        return glfwWindowShouldClose(m_window);
+        return glfwWindowShouldClose(window_);
     }
 
     std::pair<double, double> Window::mouse_position() const
     {
         double xpos = 0.0;
         double ypos = 0.0f;
-        glfwGetCursorPos(m_window, &xpos, &ypos);
+        glfwGetCursorPos(window_, &xpos, &ypos);
         return { xpos, ypos };
     }
 
     void Window::close()
     {
-        glfwSetWindowShouldClose(m_window, GL_TRUE);
+        glfwSetWindowShouldClose(window_, GL_TRUE);
     }
 
     void Window::update()
     {
         // End Frame
-        nvgEndFrame(m_nvgContext);
-        glfwSwapBuffers(m_window);
+        nvgEndFrame(nanovg_context_);
+        glfwSwapBuffers(window_);
         glfwPollEvents();
 
         // Begin Frame
-        glViewport(0, 0, m_framebufferSize.first, m_framebufferSize.second);
+        glViewport(0, 0, framebuffer_size_.first, framebuffer_size_.second);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         // Calculate pixel ration for hi-dpi devices.
-        double pxRatio = static_cast<double>(m_framebufferSize.first) / static_cast<double>(m_windowSize.first);
-        nvgBeginFrame(m_nvgContext, m_windowSize.first, m_windowSize.second, static_cast<double>(pxRatio) );
+        double pxRatio = static_cast<double>(framebuffer_size_.first) / static_cast<float>(window_size_.first);
+        nvgBeginFrame(nanovg_context_, window_size_.first, window_size_.second, static_cast<float>(pxRatio) );
     }
 
     std::pair<int, int> Window::window_size() const
     {
         std::pair<int, int> size(0, 0);
-        glfwGetFramebufferSize(m_window, &size.first, &size.second);
+        glfwGetFramebufferSize(window_, &size.first, &size.second);
         return size;
     }
 
@@ -169,44 +170,44 @@ namespace buw {
                            double thickness
     ) const
     {
-        nvgSave(m_nvgContext);
+        nvgSave(nanovg_context_);
 
-        nvgBeginPath(m_nvgContext);
-        nvgLineCap(m_nvgContext, NVG_ROUND);
-        nvgLineJoin(m_nvgContext, NVG_BEVEL);
-        nvgStrokeColor(m_nvgContext, nvgRGBA(r * 255.0f, g * 255.0f, b * 255.0f, 160));
-        nvgStrokeWidth(m_nvgContext, thickness * 3.0f);
-        nvgMoveTo(m_nvgContext, static_cast<float>(starting_pos_x), static_cast<float>(starting_pos_y));
-        nvgLineTo(m_nvgContext, static_cast<float>(end_pos_x), static_cast<float>(end_pos_y));
-        nvgStroke(m_nvgContext);
+        nvgBeginPath(nanovg_context_);
+        nvgLineCap(nanovg_context_, NVG_ROUND);
+        nvgLineJoin(nanovg_context_, NVG_BEVEL);
+        nvgStrokeColor(nanovg_context_, nvgRGBA(static_cast<unsigned char>(r * 255.0), static_cast<unsigned char>(g * 255.0), static_cast<unsigned char>(b * 255.0), 160));
+        nvgStrokeWidth(nanovg_context_, thickness * 3.0f);
+        nvgMoveTo(nanovg_context_, static_cast<float>(starting_pos_x), static_cast<float>(starting_pos_y));
+        nvgLineTo(nanovg_context_, static_cast<float>(end_pos_x), static_cast<float>(end_pos_y));
+        nvgStroke(nanovg_context_);
 
-        nvgRestore(m_nvgContext);
+        nvgRestore(nanovg_context_);
     }
 
-    void Window::draw_point(double x, double y, double r, double g, double b) const
+    void Window::draw_point(double pos_x, double pos_y, double normalized_red_component, double normalized_green_component, double normalized_blue_component) const
     {
-        nvgSave(m_nvgContext);
-        nvgBeginPath(m_nvgContext);
-        nvgCircle(m_nvgContext, x, y, 2);
+        nvgSave(nanovg_context_);
+        nvgBeginPath(nanovg_context_);
+        nvgCircle(nanovg_context_, pos_x, pos_y, 2);
 
-        auto col = nvgRGBA(r * 255.0f, g * 255.0f, b * 255.0f, 255);
-        nvgFillColor(m_nvgContext, col);
-        nvgFill(m_nvgContext);
-        nvgStrokeColor(m_nvgContext, col);
-        nvgStroke(m_nvgContext);
-        nvgRestore(m_nvgContext);
+        auto col = nvgRGBA(static_cast<unsigned char>(normalized_red_component * 255.0f), static_cast<unsigned char>(normalized_green_component * 255.0f), static_cast<unsigned char>(normalized_blue_component * 255.0f), 255);
+        nvgFillColor(nanovg_context_, col);
+        nvgFill(nanovg_context_);
+        nvgStrokeColor(nanovg_context_, col);
+        nvgStroke(nanovg_context_);
+        nvgRestore(nanovg_context_);
     }
 
-    void Window::draw_text(double x, double y, double font_size, std::string const& text) const
+    void Window::draw_text(double pos_x, double pos_y, double font_size, std::string const& text) const
     {
-        nvgSave(m_nvgContext);
-        nvgFontSize(m_nvgContext, font_size);
-        nvgFontFace(m_nvgContext, "sans");
-        nvgTextAlign(m_nvgContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+        nvgSave(nanovg_context_);
+        nvgFontSize(nanovg_context_, static_cast<float>(font_size));
+        nvgFontFace(nanovg_context_, "sans");
+        nvgTextAlign(nanovg_context_, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 
-        nvgFillColor(m_nvgContext, nvgRGBA(255, 255, 255, 255));
-        nvgText(m_nvgContext, x, y, text.c_str(), nullptr);
-        nvgRestore(m_nvgContext);
+        nvgFillColor(nanovg_context_, nvgRGBA(255, 255, 255, 255));
+        nvgText(nanovg_context_, static_cast<float>(pos_x), static_cast<float>(pos_y), text.c_str(), nullptr);
+        nvgRestore(nanovg_context_);
     }
 
     double Window::get_time() const

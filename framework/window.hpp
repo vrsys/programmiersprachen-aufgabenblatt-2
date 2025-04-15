@@ -27,11 +27,11 @@ namespace buw {
         ) const;
 
 
-        // Draw a point at (x,y) with color (r,g,b)
-        // where (x,y)\in [0,1)^2 and (r,g,b) \in [0,1)^3
-        void draw_point(double x, double y, double r, double g, double b) const;
+        // Draw a point at (pos_x,pos_y) with color (r, g, b)
+        // where (pos_x, pos_y) is between 0 and width and height and (r,g,b) \in [0,1)^3
+        void draw_point(double pos_x, double pos_y, double r, double g, double b) const;
 
-        void draw_text(double x, double y, double font_size, std::string const& text) const;
+        void draw_text(double pos_x, double pos_y, double font_size, std::string const& text) const;
 
         // Return the mouse position in screen coordinates
         std::pair<double, double> mouse_position() const;
@@ -51,23 +51,20 @@ namespace buw {
         int get_key(int key) const;
         int get_mouse_button(int button) const;
 
-        // current window size
+        // get current window size
         std::pair<int, int> window_size() const;
 
         // time elapsed since GLFW was initialized
         double get_time() const;
 
     private:
-        GLFWwindow* m_window;
-        NVGcontext* m_nvgContext;
-        std::pair<int, int> m_windowSize;
-        std::pair<int, int> m_framebufferSize;
-        std::string const m_title;
+        GLFWwindow* window_;
+        NVGcontext* nanovg_context_;
+        std::pair<int, int> window_size_;
+        std::pair<int, int> framebuffer_size_;
+        std::string const title_;
 
-        int m_font_normal;
-        int m_font_bold;
-        int m_font_icons;
-        int m_font_emoji;
+        int normal_font_;
     };
 
 } //namespace buw
