@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     
     double text_offset_x = 10.0;
     double text_offset_y =  5.0;
-    double font_size = 35.0;
+    double font_size     = 35.0;
     
     win.draw_text(text_offset_x, text_offset_y, font_size, display_text);
 
