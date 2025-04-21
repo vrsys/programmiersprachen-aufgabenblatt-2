@@ -2,7 +2,6 @@
 #define BUW_MAT2_HPP
 
 #include "vec2.hpp" //access to your own datatype buw::Vec2
-#include <array> //access to std::array<T, SIZE>
 
 namespace buw {
 
